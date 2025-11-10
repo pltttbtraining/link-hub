@@ -6,425 +6,35 @@
     <title>Link Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/css">
-        :root {
-            --primary-blue: #3b82f6;
-            --primary-purple: #8b5cf6;
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
-            --success-gradient: linear-gradient(135deg, #10b981, #059669);
-            --warning-gradient: linear-gradient(135deg, #f59e0b, #d97706);
-            --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+    <style>
         body {
             font-family: 'Sarabun', 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-        
-        /* Header Styles */
-        .hub-header {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        @media (min-width: 768px) {
-            .hub-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .user-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        
-        .user-details h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .user-details p {
-            color: #64748b;
-            font-size: 16px;
-        }
-        
-        .nav-tabs {
-            display: flex;
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 4px;
-        }
-        
-        .tab-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            background: transparent;
-            color: #64748b;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
+            background: #f8f9fa;
+            color: #2d3748;
         }
         
         .tab-btn.active {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
         
-        /* Content Area */
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Course Card Styles */
-        .courses-section {
-            margin-bottom: 32px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .section-header h3 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .see-all {
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-        }
-        
-        .course-badge {
-            background: #ef4444;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .courses-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        
-        @media (min-width: 768px) {
-            .courses-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .courses-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        .course-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        .course-card, .tile-card, .file-manager, .wallet-section {
             transition: all 0.3s ease;
         }
         
-        .course-card:hover {
+        .course-card:hover, .tile-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-        }
-        
-        .course-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .course-card p {
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-        
-        .course-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: #64748b;
-        }
-        
-        .course-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #f59e0b;
-            font-weight: 600;
-        }
-        
-        /* Tile Card Styles */
-        .tiles-section {
-            margin-bottom: 32px;
-        }
-        
-        .tiles-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        
-        @media (min-width: 640px) {
-            .tiles-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .tiles-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        .tile-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid #f1f5f9;
-        }
-        
-        .tile-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            border-color: var(--primary-blue);
-        }
-        
-        .tile-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            background: var(--primary-gradient);
-            margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-        }
-        
-        .tile-card h4 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .tile-card p {
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        /* Course Details Section */
-        .course-details {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 32px;
-        }
-        
-        .about-course {
-            margin-bottom: 24px;
-        }
-        
-        .about-course h4 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .about-course p {
-            color: #64748b;
-        }
-        
-        .course-content {
-            margin-bottom: 24px;
-        }
-        
-        .lesson-item {
-            border-top: 1px solid #e2e8f0;
-            padding: 16px 0;
-        }
-        
-        .lesson-item h5 {
-            font-weight: 500;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .lesson-item p {
-            color: #64748b;
-            font-size: 14px;
-        }
-        
-        .submit-review {
-            width: 100%;
-            background: var(--primary-blue);
-            color: white;
-            font-weight: 600;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            font-family: inherit;
-            font-size: 16px;
-        }
-        
-        .submit-review:hover {
-            background: #2563eb;
-        }
-        
-        /* File Manager Styles */
-        .file-manager {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 24px;
-        }
-        
-        .file-header {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        @media (min-width: 768px) {
-            .file-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
-        .file-header h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .search-bar {
-            width: 100%;
-        }
-        
-        @media (min-width: 768px) {
-            .search-bar {
-                width: 256px;
-            }
-        }
-        
-        .search-bar input {
-            width: 100%;
-            background: #f1f5f9;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        
-        .search-bar input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--primary-blue);
-        }
-        
-        .storage-info {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 24px;
-            border-radius: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .storage-info h4 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .storage-info p {
-            margin-bottom: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         
         .storage-bar {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.3);
             height: 6px;
             border-radius: 3px;
-            margin: 16px 0;
+            margin: 15px 0;
             overflow: hidden;
         }
         
@@ -435,568 +45,36 @@
             border-radius: 3px;
         }
         
-        .folders-section {
-            margin-bottom: 32px;
-        }
-        
-        .folders-section h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-        
-        .folders-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-        
-        @media (min-width: 640px) {
-            .folders-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        .folder-card {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-        
-        .folder-card:hover {
-            border-color: var(--primary-blue);
-            background: white;
-        }
-        
-        .folder-icon {
-            font-size: 24px;
-            margin-bottom: 12px;
-            color: var(--primary-blue);
-        }
-        
-        .folder-card h5 {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .folder-card p {
-            color: #64748b;
-            font-size: 12px;
-        }
-        
-        .recent-files {
-            margin-bottom: 32px;
-        }
-        
-        .recent-files h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-        
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 12px;
-        }
-        
-        .file-icon {
-            font-size: 24px;
-        }
-        
-        .file-info h5 {
-            font-weight: 500;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .file-info p {
-            color: #64748b;
-            font-size: 12px;
-        }
-        
-        .global-stats {
-            margin-bottom: 24px;
-        }
-        
-        .global-stats h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        @media (min-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        .stat-card {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .stat-card h5 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .stat-card p {
-            color: #64748b;
-            font-size: 12px;
-        }
-        
-        .storage-breakdown {
-            margin-bottom: 24px;
-        }
-        
-        .storage-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .storage-item:last-child {
-            border-bottom: none;
-        }
-        
-        .storage-item span {
-            color: #475569;
-        }
-        
-        .clean-btn {
-            width: 100%;
-            background: var(--primary-blue);
-            color: white;
-            font-weight: 600;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            font-family: inherit;
-            font-size: 16px;
-        }
-        
-        .clean-btn:hover {
-            background: #2563eb;
-        }
-        
-        .file-nav {
-            display: flex;
-            justify-content: space-between;
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 4px;
-        }
-        
-        .nav-btn {
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-            border: none;
-            background: transparent;
-            color: #64748b;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-btn.active {
-            background: white;
-            color: var(--primary-blue);
-        }
-        
-        .user-profile {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            text-align: center;
-        }
-        
-        .user-profile .flex {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .user-profile .w-16 {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            margin-bottom: 12px;
-        }
-        
-        .user-profile h4 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .user-profile p {
-            color: #64748b;
-        }
-        
-        /* Wallet Styles */
-        .wallet-section {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 24px;
-        }
-        
-        .wallet-header {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        @media (min-width: 768px) {
-            .wallet-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
-        .card-info {
-            background: var(--primary-gradient);
-            color: white;
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-        
-        .card-info p {
-            font-size: 14px;
-        }
-        
-        .balance-card {
-            background: var(--success-gradient);
-            color: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-        
-        .balance-label {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        
-        .balance-amount {
-            font-size: 36px;
-            font-weight: 700;
-        }
-        
-        .wallet-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        
-        @media (min-width: 768px) {
-            .wallet-actions {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        .action-btn {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
         .action-btn:hover {
-            border-color: var(--primary-blue);
+            border-color: #4299e1;
             background: white;
-        }
-        
-        .action-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: var(--primary-blue);
-        }
-        
-        .action-btn p {
-            font-size: 12px;
-            color: #475569;
-        }
-        
-        .financial-overview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .financial-overview > div {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-        
-        .financial-overview p:first-child {
-            color: #64748b;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-        
-        .financial-overview p:last-child {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .transaction-list h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-        
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-        
-        .transaction-info h5 {
-            font-weight: 500;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        
-        .transaction-info p {
-            color: #64748b;
-            font-size: 12px;
-        }
-        
-        .transaction-amount {
-            font-weight: 600;
-            color: #ef4444;
-        }
-        
-        .unpaid-bills {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 24px;
-        }
-        
-        .unpaid-bills h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-        
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 16px;
-        }
-        
-        .tab {
-            padding: 8px 16px;
-            font-weight: 500;
-            color: #64748b;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-        
-        .tab.active {
-            color: var(--primary-blue);
-            border-bottom-color: var(--primary-blue);
-        }
-        
-        .bill-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .bill-item:last-child {
-            border-bottom: none;
-        }
-        
-        .bill-item > div {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .bill-item .w-10 {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #dbeafe;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-blue);
-            font-weight: 600;
-        }
-        
-        .bill-item h5 {
-            font-weight: 500;
-            color: #1e293b;
-            margin-bottom: 2px;
-        }
-        
-        .bill-item p {
-            color: #64748b;
-            font-size: 12px;
-        }
-        
-        .pay-now {
-            background: var(--primary-blue);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 12px;
-            transition: background 0.3s ease;
-            font-family: inherit;
-        }
-        
-        .pay-now:hover {
-            background: #2563eb;
-        }
-        
-        .activity-stats {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        .activity-stats h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-        
-        .activity-stats > div {
-            margin-bottom: 24px;
-        }
-        
-        .activity-stats > div:last-child {
-            margin-bottom: 0;
-        }
-        
-        .activity-stats h5 {
-            font-weight: 500;
-            color: #475569;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .activity-stats h5 span {
-            color: var(--primary-blue);
-            font-size: 12px;
-        }
-        
-        .activity-stats .bg-gray-100 {
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 16px;
-        }
-        
-        .activity-stats .flex {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        
-        .activity-stats .flex:last-child {
-            margin-bottom: 0;
-        }
-        
-        .activity-stats .text-sm {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 8px;
-        }
-        
-        .activity-stats .text-xs {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: #64748b;
         }
     </style>
 </head>
-<body>
-    <div class="app-container">
+<body class="min-h-screen">
+    <div class="hub-container max-w-1200 mx-auto p-4 md:p-6">
         <!-- Header -->
-        <div class="hub-header">
-            <div class="user-info">
-                <div class="user-avatar">CS</div>
+        <div class="hub-header bg-white rounded-2xl p-4 md:p-6 mb-6 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="user-info flex items-center gap-4">
+                <div class="user-avatar w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg md:text-xl">
+                    CS
+                </div>
                 <div class="user-details">
-                    <h2>Chou Tzuyu</h2>
-                    <p>Blender 3D Class</p>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Chou Tzuyu</h2>
+                    <p class="text-gray-600 text-sm md:text-base">Blender 3D Class</p>
                 </div>
             </div>
             
-            <div class="nav-tabs">
-                <button class="tab-btn active" data-tab="courses">Courses</button>
-                <button class="tab-btn" data-tab="files">Files</button>
-                <button class="tab-btn" data-tab="wallet">Wallet</button>
+            <div class="nav-tabs flex bg-gray-100 rounded-xl p-1">
+                <button class="tab-btn active px-4 py-2 rounded-lg transition-all" data-tab="courses">
+                    Courses
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg transition-all" data-tab="files">
+                    Files
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg transition-all" data-tab="wallet">
+                    Wallet
+                </button>
             </div>
         </div>
 
@@ -1005,49 +83,53 @@
             <!-- Courses Tab Content -->
             <div id="courses-tab" class="tab-content active">
                 <!-- Courses Section -->
-                <div class="courses-section">
-                    <div class="section-header">
-                        <h3>Blender 3D Class</h3>
-                        <div class="course-badge">30% OFF</div>
+                <div class="courses-section mb-8">
+                    <div class="section-header flex justify-between items-center mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800">Blender 3D Class</h3>
+                        <div class="course-badge bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            30% OFF
+                        </div>
                     </div>
                     
-                    <div class="section-header">
-                        <h3>My Course</h3>
-                        <a href="#" class="see-all">See all</a>
+                    <div class="section-header flex justify-between items-center mb-6">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-800">My Course</h3>
+                        <a href="#" class="see-all text-blue-500 font-medium">See all</a>
                     </div>
                     
-                    <div class="courses-grid">
-                        <div class="course-card">
-                            <div class="course-badge">4th 5 min left • 22 flemens</div>
-                            <h4 class="course-title">Adobe Premiere Pro</h4>
-                            <p>Master video editing with industry standard tools</p>
-                            <div class="course-meta">
+                    <div class="courses-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                        <div class="course-card bg-white rounded-2xl p-4 md:p-6 shadow-md">
+                            <div class="course-badge bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-semibold inline-block mb-3">
+                                4th 5 min left • 22 flemens
+                            </div>
+                            <h4 class="course-title text-lg font-semibold text-gray-800 mb-2">Adobe Premiere Pro</h4>
+                            <p class="text-gray-600 text-sm mb-4">Master video editing with industry standard tools</p>
+                            <div class="course-meta flex justify-between items-center text-sm text-gray-500">
                                 <span>All Course</span>
-                                <div class="course-rating">
+                                <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
                                     <span>⭐</span>
                                     <span>Popular</span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="course-card">
-                            <h4 class="course-title">Adobe Illustrator</h4>
-                            <p>Create stunning vector graphics</p>
-                            <div class="course-meta">
+                        <div class="course-card bg-white rounded-2xl p-4 md:p-6 shadow-md">
+                            <h4 class="course-title text-lg font-semibold text-gray-800 mb-2">Adobe Illustrator</h4>
+                            <p class="text-gray-600 text-sm mb-4">Create stunning vector graphics</p>
+                            <div class="course-meta flex justify-between items-center text-sm text-gray-500">
                                 <span>Design Course</span>
-                                <div class="course-rating">
+                                <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
                                     <span>⭐</span>
                                     <span>5.0</span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="course-card">
-                            <h4 class="course-title">Figma UI Design</h4>
-                            <p>Design beautiful user interfaces</p>
-                            <div class="course-meta">
+                        <div class="course-card bg-white rounded-2xl p-4 md:p-6 shadow-md">
+                            <h4 class="course-title text-lg font-semibold text-gray-800 mb-2">Figma UI Design</h4>
+                            <p class="text-gray-600 text-sm mb-4">Design beautiful user interfaces</p>
+                            <div class="course-meta flex justify-between items-center text-sm text-gray-500">
                                 <span>UI/UX Course</span>
-                                <div class="course-rating">
+                                <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
                                     <span>⭐</span>
                                     <span>4.9</span>
                                 </div>
@@ -1057,296 +139,322 @@
                 </div>
 
                 <!-- Tiles Section -->
-                <div class="tiles-section">
-                    <h3>Quick Access</h3>
-                    <div class="tiles-grid">
-                        <div class="tile-card">
-                            <div class="tile-icon">🎬</div>
-                            <h4>Premiere Pro</h4>
-                            <p>Video editing masterclass</p>
+                <div class="tiles-section mb-8">
+                    <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Quick Access</h3>
+                    <div class="tiles-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                        <div class="tile-card bg-white rounded-2xl p-4 md:p-6 shadow-md text-center border border-gray-100">
+                            <div class="tile-icon w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mb-3 md:mb-4 flex items-center justify-center text-white text-xl md:text-2xl">
+                                🎬
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">Premiere Pro</h4>
+                            <p class="text-gray-600 text-sm">Video editing masterclass</p>
                         </div>
                         
-                        <div class="tile-card">
-                            <div class="tile-icon">🎨</div>
-                            <h4>Illustrator</h4>
-                            <p>Vector graphics design</p>
+                        <div class="tile-card bg-white rounded-2xl p-4 md:p-6 shadow-md text-center border border-gray-100">
+                            <div class="tile-icon w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 mx-auto mb-3 md:mb-4 flex items-center justify-center text-white text-xl md:text-2xl">
+                                🎨
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">Illustrator</h4>
+                            <p class="text-gray-600 text-sm">Vector graphics design</p>
                         </div>
                         
-                        <div class="tile-card">
-                            <div class="tile-icon">📐</div>
-                            <h4>Figma</h4>
-                            <p>UI/UX design tool</p>
+                        <div class="tile-card bg-white rounded-2xl p-4 md:p-6 shadow-md text-center border border-gray-100">
+                            <div class="tile-icon w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 mx-auto mb-3 md:mb-4 flex items-center justify-center text-white text-xl md:text-2xl">
+                                📐
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">Figma</h4>
+                            <p class="text-gray-600 text-sm">UI/UX design tool</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Course Details Section -->
-                <div class="course-details">
-                    <div class="section-header">
-                        <h3>Mastering Adobe Premiere Pro</h3>
-                        <div class="course-rating">
+                <div class="course-details bg-white rounded-2xl p-4 md:p-6 shadow-md mb-8">
+                    <div class="section-header flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Mastering Adobe Premiere Pro</h3>
+                        <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
                             <span>⭐</span>
                             <span>5.0</span>
-                            <span>© 4h 5 min left</span>
+                            <span class="text-gray-500 text-sm ml-1">© 4h 5 min left</span>
                         </div>
                     </div>
-                    <p>by Ryan AN</p>
+                    <p class="text-gray-600 mb-4">by Ryan AN</p>
                     
-                    <div class="about-course">
-                        <h4>About this course</h4>
-                        <p>Premiere Pro 2021 is a top-of-the-line, industry standard video editor with an incredible simple layout and powerful editing tools.</p>
+                    <div class="about-course mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">About this course</h4>
+                        <p class="text-gray-600">Premiere Pro 2021 is a top-of-the-line, industry standard video editor with an incredible simple layout and powerful editing tools.</p>
                     </div>
                     
                     <div class="course-content">
-                        <div class="lesson-item">
-                            <h5>Intro to Videography</h5>
-                            <p>23 minutes</p>
+                        <div class="lesson-item border-t border-gray-200 py-3">
+                            <h5 class="font-medium text-gray-800">Intro to Videography</h5>
+                            <p class="text-gray-500 text-sm">23 minutes</p>
                         </div>
-                        <div class="lesson-item">
-                            <h5>Learning Basic Tools</h5>
-                            <p>16 minutes</p>
+                        <div class="lesson-item border-t border-gray-200 py-3">
+                            <h5 class="font-medium text-gray-800">Learning Basic Tools</h5>
+                            <p class="text-gray-500 text-sm">16 minutes</p>
                         </div>
                     </div>
                     
-                    <div>
-                        <button class="submit-review">Submit a review</button>
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-colors">
+                            Submit a review
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Files Tab Content -->
-            <div id="files-tab" class="tab-content">
-                <div class="file-manager">
-                    <div class="file-header">
-                        <h3>FileSnap.</h3>
-                        <div class="search-bar">
-                            <input type="text" placeholder="Search files...">
+            <div id="files-tab" class="tab-content hidden">
+                <div class="file-manager bg-white rounded-2xl p-4 md:p-6 shadow-md mb-6">
+                    <div class="file-header flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                        <h3 class="text-2xl font-bold text-gray-800">FileSnap.</h3>
+                        <div class="search-bar w-full md:w-64">
+                            <input type="text" placeholder="Search files..." class="w-full bg-gray-100 border-0 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
-                    <div class="storage-info">
-                        <h4>Available Space</h4>
-                        <p>70.1 GB of 128 TB Used</p>
+                    <div class="storage-info bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-4 md:p-6 mb-6">
+                        <h4 class="text-lg font-semibold mb-2">Available Space</h4>
+                        <p class="mb-4">70.1 GB of 128 TB Used</p>
                         <div class="storage-bar">
                             <div class="storage-used"></div>
                         </div>
                     </div>
 
-                    <div class="folders-section">
-                        <h4>My Folders</h4>
-                        <div class="folders-grid">
-                            <div class="folder-card">
-                                <div class="folder-icon">🎨</div>
-                                <h5>Figma Files</h5>
-                                <p>202 files, 2.6 GB</p>
+                    <div class="folders-section mb-8">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">My Folders</h4>
+                        <div class="folders-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="folder-card bg-gray-50 rounded-2xl p-4 border-2 border-gray-200">
+                                <div class="folder-icon text-2xl text-blue-500 mb-2">🎨</div>
+                                <h5 class="font-semibold text-gray-800 mb-1">Figma Files</h5>
+                                <p class="text-gray-600 text-sm">202 files, 2.6 GB</p>
                             </div>
-                            <div class="folder-card">
-                                <div class="folder-icon">✏️</div>
-                                <h5>Sketch Files</h5>
-                                <p>54 files, 1.2 GB</p>
+                            <div class="folder-card bg-gray-50 rounded-2xl p-4 border-2 border-gray-200">
+                                <div class="folder-icon text-2xl text-blue-500 mb-2">✏️</div>
+                                <h5 class="font-semibold text-gray-800 mb-1">Sketch Files</h5>
+                                <p class="text-gray-600 text-sm">54 files, 1.2 GB</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="recent-files">
-                        <h4>Recent Files</h4>
-                        <div class="file-item">
-                            <div class="file-icon">📄</div>
+                    <div class="recent-files mb-8">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Recent Files</h4>
+                        <div class="file-item flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                            <div class="file-icon text-2xl">📄</div>
                             <div class="file-info">
-                                <h5>My story_2024.doc</h5>
-                                <p>202 files, 2.6 GB</p>
+                                <h5 class="font-medium text-gray-800">My story_2024.doc</h5>
+                                <p class="text-gray-600 text-sm">202 files, 2.6 GB</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="global-stats">
-                        <h4>Global Statistics</h4>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <h5>58 GB</h5>
-                                <p>Storage Available</p>
+                    <div class="global-stats mb-6">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Global Statistics</h4>
+                        <div class="stats-grid grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
+                                <h5 class="text-lg font-bold text-gray-800">58 GB</h5>
+                                <p class="text-gray-600 text-sm">Storage Available</p>
                             </div>
-                            <div class="stat-card">
-                                <h5>128 GB</h5>
-                                <p>Total Storage</p>
+                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
+                                <h5 class="text-lg font-bold text-gray-800">128 GB</h5>
+                                <p class="text-gray-600 text-sm">Total Storage</p>
                             </div>
-                            <div class="stat-card">
-                                <h5>58 GB</h5>
-                                <p>Storage Used</p>
+                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
+                                <h5 class="text-lg font-bold text-gray-800">58 GB</h5>
+                                <p class="text-gray-600 text-sm">Storage Used</p>
                             </div>
-                            <div class="stat-card">
-                                <h5>Clean</h5>
-                                <p>Junk Files</p>
+                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
+                                <h5 class="text-lg font-bold text-gray-800">Clean</h5>
+                                <p class="text-gray-600 text-sm">Junk Files</p>
                             </div>
                         </div>
                         
-                        <div class="storage-breakdown">
-                            <div class="storage-item">
-                                <span>Documents</span>
-                                <span>31.6 GB • 1233 files</span>
+                        <div class="storage-breakdown mb-6">
+                            <div class="storage-item flex justify-between py-2 border-b border-gray-200">
+                                <span class="text-gray-700">Documents</span>
+                                <span class="text-gray-600">31.6 GB • 1233 files</span>
                             </div>
-                            <div class="storage-item">
-                                <span>Photos</span>
-                                <span>15 GB • 656 files</span>
+                            <div class="storage-item flex justify-between py-2">
+                                <span class="text-gray-700">Photos</span>
+                                <span class="text-gray-600">15 GB • 656 files</span>
                             </div>
                         </div>
 
-                        <p>Boost your storage to make it more optimal and spacious space.</p>
+                        <p class="text-gray-600 mb-4 text-sm">Boost your storage to make it more optimal and spacious space.</p>
                         
-                        <button class="clean-btn">Clean Junk</button>
+                        <button class="clean-btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-colors">
+                            Clean Junk
+                        </button>
                     </div>
 
-                    <div class="file-nav">
-                        <button class="nav-btn active">Home</button>
-                        <button class="nav-btn">Folders</button>
-                        <button class="nav-btn">Clean</button>
-                        <button class="nav-btn">Settings</button>
+                    <div class="file-nav flex justify-between bg-gray-100 rounded-xl p-1">
+                        <button class="nav-btn active bg-white text-blue-500 px-4 py-2 rounded-lg font-medium">Home</button>
+                        <button class="nav-btn px-4 py-2 rounded-lg font-medium text-gray-600">Folders</button>
+                        <button class="nav-btn px-4 py-2 rounded-lg font-medium text-gray-600">Clean</button>
+                        <button class="nav-btn px-4 py-2 rounded-lg font-medium text-gray-600">Settings</button>
                     </div>
                 </div>
                 
-                <div class="user-profile">
-                    <div class="flex">
-                        <div class="w-16"></div>
-                        <h4>@siren.uix</h4>
-                        <p>Product Designer</p>
+                <div class="user-profile bg-white rounded-2xl p-4 md:p-6 shadow-md text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 mb-3"></div>
+                        <h4 class="font-bold text-gray-800">@siren.uix</h4>
+                        <p class="text-gray-600">Product Designer</p>
                     </div>
                 </div>
             </div>
 
             <!-- Wallet Tab Content -->
-            <div id="wallet-tab" class="tab-content">
-                <div class="wallet-section">
-                    <div class="wallet-header">
-                        <div class="user-info">
-                            <div class="user-avatar">MS</div>
+            <div id="wallet-tab" class="tab-content hidden">
+                <div class="wallet-section bg-white rounded-2xl p-4 md:p-6 shadow-md mb-6">
+                    <div class="wallet-header flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <div class="user-info flex items-center gap-4 mb-4 md:mb-0">
+                            <div class="user-avatar w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                                MS
+                            </div>
                             <div>
-                                <h2>Michael Samuel</h2>
-                                <p>Current Balance: $978.85</p>
+                                <h2 class="text-xl font-bold text-gray-800">Michael Samuel</h2>
+                                <p class="text-gray-600">Current Balance: $978.85</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <p>**** **** **** 234</p>
-                            <p>Leg, Date: 03/28</p>
+                        <div class="card-info bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-3 text-center">
+                            <p class="text-sm">**** **** **** 234</p>
+                            <p class="text-xs">Leg, Date: 03/28</p>
                         </div>
                     </div>
 
-                    <div class="balance-card">
-                        <p class="balance-label">Available Balance</p>
-                        <p class="balance-amount">$678.85</p>
+                    <div class="balance-card bg-gradient-to-r from-teal-400 to-teal-500 text-white rounded-2xl p-4 md:p-6 mb-6">
+                        <p class="balance-label text-teal-100">Available Balance</p>
+                        <p class="balance-amount text-3xl md:text-4xl font-bold">$678.85</p>
                     </div>
 
-                    <div class="wallet-actions">
-                        <div class="action-btn">
-                            <div class="action-icon">💼</div>
-                            <p>Wallet</p>
+                    <div class="wallet-actions grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
+                            <div class="action-icon text-2xl text-blue-500 mb-1">💼</div>
+                            <p class="text-xs text-gray-700">Wallet</p>
                         </div>
-                        <div class="action-btn">
-                            <div class="action-icon">🔄</div>
-                            <p>Transfer</p>
+                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
+                            <div class="action-icon text-2xl text-blue-500 mb-1">🔄</div>
+                            <p class="text-xs text-gray-700">Transfer</p>
                         </div>
-                        <div class="action-btn">
-                            <div class="action-icon">💳</div>
-                            <p>Pay</p>
+                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
+                            <div class="action-icon text-2xl text-blue-500 mb-1">💳</div>
+                            <p class="text-xs text-gray-700">Pay</p>
                         </div>
-                        <div class="action-btn">
-                            <div class="action-icon">📱</div>
-                            <p>Topup</p>
+                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
+                            <div class="action-icon text-2xl text-blue-500 mb-1">📱</div>
+                            <p class="text-xs text-gray-700">Topup</p>
                         </div>
                     </div>
 
-                    <div class="financial-overview">
-                        <div>
-                            <p>Earning</p>
-                            <p>$1582.67</p>
+                    <div class="financial-overview grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <p class="text-gray-600 text-sm">Earning</p>
+                            <p class="text-lg font-bold text-gray-800">$1582.67</p>
                         </div>
-                        <div>
-                            <p>Saved</p>
-                            <p>$595.11</p>
+                        <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <p class="text-gray-600 text-sm">Saved</p>
+                            <p class="text-lg font-bold text-gray-800">$595.11</p>
                         </div>
-                        <div>
-                            <p>Available</p>
-                            <p>$987.56</p>
+                        <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <p class="text-gray-600 text-sm">Available</p>
+                            <p class="text-lg font-bold text-gray-800">$987.56</p>
                         </div>
                     </div>
 
                     <div class="transaction-list">
-                        <h4>Recent Transaction</h4>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Recent Transaction</h4>
                         
-                        <div class="transaction-item">
+                        <div class="transaction-item flex justify-between items-center py-3 border-b border-gray-200">
                             <div class="transaction-info">
-                                <h5>Adobe Collection</h5>
-                                <p>Payment via wallet can be done $125</p>
+                                <h5 class="font-medium text-gray-800">Adobe Collection</h5>
+                                <p class="text-gray-600 text-sm">Payment via wallet can be done $125</p>
                             </div>
-                            <div class="transaction-amount">-$125</div>
+                            <div class="transaction-amount text-red-500 font-semibold">-$125</div>
                         </div>
                         
-                        <div class="transaction-item">
+                        <div class="transaction-item flex justify-between items-center py-3">
                             <div class="transaction-info">
-                                <h5>Ups Uplabs</h5>
-                                <p>Payment Record $95</p>
+                                <h5 class="font-medium text-gray-800">Ups Uplabs</h5>
+                                <p class="text-gray-600 text-sm">Payment Record $95</p>
                             </div>
-                            <div class="transaction-amount">-$95</div>
+                            <div class="transaction-amount text-red-500 font-semibold">-$95</div>
                         </div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                    <div class="unpaid-bills">
-                        <h4>Unpaid Bill</h4>
-                        <div class="tabs">
-                            <button class="tab active">All</button>
-                            <button class="tab">Upcoming</button>
-                            <button class="tab">Previous</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="unpaid-bills bg-white rounded-2xl p-4 md:p-6 shadow-md">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Unpaid Bill</h4>
+                        <div class="tabs flex border-b border-gray-200 mb-4">
+                            <button class="tab active px-4 py-2 font-medium text-blue-500 border-b-2 border-blue-500">All</button>
+                            <button class="tab px-4 py-2 font-medium text-gray-500">Upcoming</button>
+                            <button class="tab px-4 py-2 font-medium text-gray-500">Previous</button>
                         </div>
                         
-                        <div class="bill-item">
-                            <div>
-                                <div class="w-10">D</div>
+                        <div class="bill-item flex justify-between items-center py-3 border-b border-gray-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                                    D
+                                </div>
                                 <div>
-                                    <h5>Drübble</h5>
-                                    <p>Waiting for payment</p>
+                                    <h5 class="font-medium text-gray-800">Drübble</h5>
+                                    <p class="text-gray-600 text-sm">Waiting for payment</p>
                                 </div>
                             </div>
-                            <button class="pay-now">Pay Now</button>
+                            <button class="pay-now bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Pay Now
+                            </button>
                         </div>
                         
-                        <div class="bill-item">
-                            <div>
-                                <div class="w-10">FA</div>
+                        <div class="bill-item flex justify-between items-center py-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                                    FA
+                                </div>
                                 <div>
-                                    <h5>Front Awesome</h5>
-                                    <p>Payment pending</p>
+                                    <h5 class="font-medium text-gray-800">Front Awesome</h5>
+                                    <p class="text-gray-600 text-sm">Payment pending</p>
                                 </div>
                             </div>
-                            <button class="pay-now">Pay Now</button>
+                            <button class="pay-now bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Pay Now
+                            </button>
                         </div>
                     </div>
 
-                    <div class="activity-stats">
-                        <h4>Activity</h4>
+                    <div class="activity-stats bg-white rounded-2xl p-4 md:p-6 shadow-md">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Activity</h4>
                         
-                        <div>
-                            <h5>Statistics <span>View All</span></h5>
-                            <div class="bg-gray-100">
-                                <div class="flex">
-                                    <span>Bank</span>
-                                    <span>65%</span>
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h5 class="font-medium text-gray-700">Statistics</h5>
+                                <span class="text-blue-500 text-sm">View All</span>
+                            </div>
+                            <div class="bg-gray-100 rounded-xl p-4">
+                                <div class="flex justify-between mb-3">
+                                    <span class="text-gray-600">Bank</span>
+                                    <span class="font-medium text-gray-800">65%</span>
                                 </div>
-                                <div class="flex">
-                                    <span>Economy</span>
-                                    <span>20%</span>
+                                <div class="flex justify-between mb-3">
+                                    <span class="text-gray-600">Economy</span>
+                                    <span class="font-medium text-gray-800">20%</span>
                                 </div>
-                                <div class="flex">
-                                    <span>Food</span>
-                                    <span>15%</span>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Food</span>
+                                    <span class="font-medium text-gray-800">15%</span>
                                 </div>
                             </div>
                         </div>
                         
                         <div>
-                            <h5>Limit <span>$105.00 per day</span></h5>
-                            <div class="bg-gray-100">
-                                <div class="text-sm">
+                            <div class="flex justify-between items-center mb-2">
+                                <h5 class="font-medium text-gray-700">Limit</h5>
+                                <span class="text-blue-500 text-sm">$105.00 per day</span>
+                            </div>
+                            <div class="bg-gray-100 rounded-xl p-4">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
                                     <span>MON</span>
                                     <span>TUE</span>
                                     <span>WED</span>
@@ -1355,7 +463,7 @@
                                     <span>SAT</span>
                                     <span>SUN</span>
                                 </div>
-                                <div class="text-xs">
+                                <div class="flex justify-between text-xs">
                                     <span>17</span>
                                     <span>18</span>
                                     <span>19</span>
@@ -1382,14 +490,14 @@
                 button.addEventListener('click', () => {
                     // Remove active class from all buttons and contents
                     tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.add('hidden'));
                     
                     // Add active class to clicked button
                     button.classList.add('active');
                     
                     // Show corresponding content
                     const tabId = button.getAttribute('data-tab') + '-tab';
-                    document.getElementById(tabId).classList.add('active');
+                    document.getElementById(tabId).classList.remove('hidden');
                 });
             });
             
@@ -1408,30 +516,6 @@
                 tab.addEventListener('click', () => {
                     billTabs.forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                });
-            });
-            
-            // Submit review button
-            const submitReviewBtn = document.querySelector('.submit-review');
-            if (submitReviewBtn) {
-                submitReviewBtn.addEventListener('click', () => {
-                    alert('Review submitted successfully!');
-                });
-            }
-            
-            // Clean junk button
-            const cleanJunkBtn = document.querySelector('.clean-btn');
-            if (cleanJunkBtn) {
-                cleanJunkBtn.addEventListener('click', () => {
-                    alert('Junk files cleaned successfully!');
-                });
-            }
-            
-            // Pay now buttons
-            const payNowButtons = document.querySelectorAll('.pay-now');
-            payNowButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    alert('Payment processed successfully!');
                 });
             });
         });
