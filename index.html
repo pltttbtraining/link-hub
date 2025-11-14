@@ -1,524 +1,707 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Hub</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Sarabun', 'Inter', sans-serif;
-            background: #f8f9fa;
-            color: #2d3748;
-        }
-        
-        .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .course-card, .tile-card, .file-manager, .wallet-section {
-            transition: all 0.3s ease;
-        }
-        
-        .course-card:hover, .tile-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .storage-bar {
-            background: rgba(255,255,255,0.3);
-            height: 6px;
-            border-radius: 3px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        
-        .storage-used {
-            background: white;
-            height: 100%;
-            width: 54.8%;
-            border-radius: 3px;
-        }
-        
-        .action-btn:hover {
-            border-color: #4299e1;
-            background: white;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Link Hub — Prototype</title>
+<style>
+  :root{
+    --primary:#0b4a6f; --muted:#667; --card:#fff; --bg:#f4f7fb;
+  }
+  body{font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai UI", "Sarabun", Arial; background:var(--bg); margin:0; color:#111;}
+  header.cover{background:linear-gradient(90deg, rgba(11,74,111,0.9), rgba(6,94,122,0.8)), url('') center/cover no-repeat; padding:40px 20px; color:#fff;}
+  .container{max-width:1100px; margin:18px auto; padding:0 16px;}
+  .cover-inner{display:flex; gap:16px; align-items:center;}
+  .avatar{width:96px;height:96px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.25); display:flex;align-items:center;justify-content:center;font-weight:700}
+  h1{margin:0;font-size:1.5rem}
+  p.lead{margin:6px 0 0 0; opacity:.95}
+  .cta{margin-left:auto}
+  button, input[type="button"]{background:var(--primary);color:#fff;border:0;padding:8px 12px;border-radius:6px;cursor:pointer}
+  .grid{display:grid; grid-template-columns: 1fr 320px; gap:18px; margin-top:18px;}
+  .card{background:var(--card); padding:12px; border-radius:10px; box-shadow:0 1px 6px rgba(20,20,20,0.06)}
+  .tiles{display:grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap:12px}
+  .tile{display:flex; gap:8px; padding:8px; align-items:center; border-radius:8px; background:#f9fbfd; cursor:pointer}
+  .tile img{width:44px;height:44px;border-radius:8px;object-fit:cover}
+  .tile .meta{flex:1}
+  .tile .meta small{display:block; color:var(--muted); font-size:12px}
+  .feed .post{margin-bottom:12px; border-radius:8px; overflow:hidden}
+  .post .post-header{display:flex; gap:10px; align-items:center; padding:10px; background:#fff}
+  .post .post-body{padding:12px; background:#fff; border-top:1px solid #eee}
+  .post .reactions{display:flex; gap:10px; padding:8px; align-items:center}
+  .reaction-btn{cursor:pointer; background:transparent; border:0; font-size:18px}
+  .small{font-size:12px; color:var(--muted)}
+  .zone-tag{background:#eef7fb;color:var(--primary);padding:4px 8px;border-radius:6px;font-weight:600}
+  .topbar{display:flex; gap:10px; align-items:center; justify-content:flex-end}
+  .admin-badge{background:#ffd; color:#a50; padding:6px 8px; border-radius:8px; font-weight:700}
+  nav.admin-nav{display:flex; gap:8px; margin-bottom:14px}
+  .hidden{display:none}
+  label.block{display:block;margin-top:8px}
+  input[type=text], input[type=password], select, textarea {width:100%; padding:8px;border-radius:6px;border:1px solid #ddd;margin-top:6px}
+  textarea{min-height:90px; resize:vertical}
+  .flex{display:flex; gap:8px; align-items:center}
+  .list{display:flex;flex-direction:column; gap:8px}
+  .small-muted{font-size:12px;color:#666}
+  .top-actions{display:flex; gap:8px; align-items:center}
+  .drag-handle{cursor:grab; padding:6px}
+  .image-preview{max-width:100%; height:auto; display:block; margin-top:8px}
+  footer{max-width:1100px;margin:18px auto;color:#666;font-size:13px}
+  @media(max-width:880px){ .grid{grid-template-columns:1fr} .cover-inner{flex-direction:column; align-items:flex-start} .cta{margin-left:0}}
+</style>
 </head>
-<body class="min-h-screen">
-    <div class="hub-container max-w-1200 mx-auto p-4 md:p-6">
-        <!-- Header -->
-        <div class="hub-header bg-white rounded-2xl p-4 md:p-6 mb-6 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="user-info flex items-center gap-4">
-                <div class="user-avatar w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg md:text-xl">
-                    CS
-                </div>
-                <div class="user-details">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Chou Tzuyu</h2>
-                    <p class="text-gray-600 text-sm md:text-base">Blender 3D Class</p>
-                </div>
-            </div>
-            
-            <div class="nav-tabs flex bg-gray-100 rounded-xl p-1">
-                <button class="tab-btn active px-4 py-2 rounded-lg transition-all" data-tab="courses">
-                    Courses
-                </button>
-                <button class="tab-btn px-4 py-2 rounded-lg transition-all" data-tab="files">
-                    Files
-                </button>
-                <button class="tab-btn px-4 py-2 rounded-lg transition-all" data-tab="wallet">
-                    Wallet
-                </button>
-            </div>
+<body>
+
+<!-- LANDING -->
+<header class="cover" id="landingHeader" style="background:linear-gradient(90deg,#0b4a6f,#06887a); color:#fff;">
+  <div class="container">
+    <div class="cover-inner">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="avatar" id="landingAvatar">LH</div>
+        <div>
+          <h1 id="siteTitle">Link Hub — ชื่อเพจ</h1>
+          <p class="lead" id="siteDesc">รวมลิงก์สำคัญ และพื้นที่โพสต์สำหรับโซนต่าง ๆ</p>
         </div>
-
-        <!-- Content Area -->
-        <div id="content-area">
-            <!-- Courses Tab Content -->
-            <div id="courses-tab" class="tab-content active">
-                <!-- Courses Section -->
-                <div class="courses-section mb-8">
-                    <div class="section-header flex justify-between items-center mb-4">
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800">Blender 3D Class</h3>
-                        <div class="course-badge bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            30% OFF
-                        </div>
-                    </div>
-                    
-                    <div class="section-header flex justify-between items-center mb-6">
-                        <h3 class="text-lg md:text-xl font-semibold text-gray-800">My Course</h3>
-                        <a href="#" class="see-all text-blue-500 font-medium">See all</a>
-                    </div>
-                    
-                    <div class="courses-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                        <div class="course-card bg-white rounded-2xl p-4 md:p-6 shadow-md">
-                            <div class="course-badge bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-semibold inline-block mb-3">
-                                4th 5 min left • 22 flemens
-                            </div>
-                            <h4 class="course-title text-lg font-semibold text-gray-800 mb-2">Adobe Premiere Pro</h4>
-                            <p class="text-gray-600 text-sm mb-4">Master video editing with industry standard tools</p>
-                            <div class="course-meta flex justify-between items-center text-sm text-gray-500">
-                                <span>All Course</span>
-                                <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
-                                    <span>⭐</span>
-                                    <span>Popular</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="course-card bg-white rounded-2xl p-4 md:p-6 shadow-md">
-                            <h4 class="course-title text-lg font-semibold text-gray-800 mb-2">Adobe Illustrator</h4>
-                            <p class="text-gray-600 text-sm mb-4">Create stunning vector graphics</p>
-                            <div class="course-meta flex justify-between items-center text-sm text-gray-500">
-                                <span>Design Course</span>
-                                <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
-                                    <span>⭐</span>
-                                    <span>5.0</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="course-card bg-white rounded-2xl p-4 md:p-6 shadow-md">
-                            <h4 class="course-title text-lg font-semibold text-gray-800 mb-2">Figma UI Design</h4>
-                            <p class="text-gray-600 text-sm mb-4">Design beautiful user interfaces</p>
-                            <div class="course-meta flex justify-between items-center text-sm text-gray-500">
-                                <span>UI/UX Course</span>
-                                <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
-                                    <span>⭐</span>
-                                    <span>4.9</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tiles Section -->
-                <div class="tiles-section mb-8">
-                    <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Quick Access</h3>
-                    <div class="tiles-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                        <div class="tile-card bg-white rounded-2xl p-4 md:p-6 shadow-md text-center border border-gray-100">
-                            <div class="tile-icon w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 mx-auto mb-3 md:mb-4 flex items-center justify-center text-white text-xl md:text-2xl">
-                                🎬
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-2">Premiere Pro</h4>
-                            <p class="text-gray-600 text-sm">Video editing masterclass</p>
-                        </div>
-                        
-                        <div class="tile-card bg-white rounded-2xl p-4 md:p-6 shadow-md text-center border border-gray-100">
-                            <div class="tile-icon w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 mx-auto mb-3 md:mb-4 flex items-center justify-center text-white text-xl md:text-2xl">
-                                🎨
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-2">Illustrator</h4>
-                            <p class="text-gray-600 text-sm">Vector graphics design</p>
-                        </div>
-                        
-                        <div class="tile-card bg-white rounded-2xl p-4 md:p-6 shadow-md text-center border border-gray-100">
-                            <div class="tile-icon w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 mx-auto mb-3 md:mb-4 flex items-center justify-center text-white text-xl md:text-2xl">
-                                📐
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-2">Figma</h4>
-                            <p class="text-gray-600 text-sm">UI/UX design tool</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Course Details Section -->
-                <div class="course-details bg-white rounded-2xl p-4 md:p-6 shadow-md mb-8">
-                    <div class="section-header flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-800">Mastering Adobe Premiere Pro</h3>
-                        <div class="course-rating flex items-center gap-1 text-yellow-500 font-semibold">
-                            <span>⭐</span>
-                            <span>5.0</span>
-                            <span class="text-gray-500 text-sm ml-1">© 4h 5 min left</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-4">by Ryan AN</p>
-                    
-                    <div class="about-course mb-6">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-2">About this course</h4>
-                        <p class="text-gray-600">Premiere Pro 2021 is a top-of-the-line, industry standard video editor with an incredible simple layout and powerful editing tools.</p>
-                    </div>
-                    
-                    <div class="course-content">
-                        <div class="lesson-item border-t border-gray-200 py-3">
-                            <h5 class="font-medium text-gray-800">Intro to Videography</h5>
-                            <p class="text-gray-500 text-sm">23 minutes</p>
-                        </div>
-                        <div class="lesson-item border-t border-gray-200 py-3">
-                            <h5 class="font-medium text-gray-800">Learning Basic Tools</h5>
-                            <p class="text-gray-500 text-sm">16 minutes</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 pt-4 border-t border-gray-200">
-                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-colors">
-                            Submit a review
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Files Tab Content -->
-            <div id="files-tab" class="tab-content hidden">
-                <div class="file-manager bg-white rounded-2xl p-4 md:p-6 shadow-md mb-6">
-                    <div class="file-header flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        <h3 class="text-2xl font-bold text-gray-800">FileSnap.</h3>
-                        <div class="search-bar w-full md:w-64">
-                            <input type="text" placeholder="Search files..." class="w-full bg-gray-100 border-0 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-
-                    <div class="storage-info bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-4 md:p-6 mb-6">
-                        <h4 class="text-lg font-semibold mb-2">Available Space</h4>
-                        <p class="mb-4">70.1 GB of 128 TB Used</p>
-                        <div class="storage-bar">
-                            <div class="storage-used"></div>
-                        </div>
-                    </div>
-
-                    <div class="folders-section mb-8">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">My Folders</h4>
-                        <div class="folders-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="folder-card bg-gray-50 rounded-2xl p-4 border-2 border-gray-200">
-                                <div class="folder-icon text-2xl text-blue-500 mb-2">🎨</div>
-                                <h5 class="font-semibold text-gray-800 mb-1">Figma Files</h5>
-                                <p class="text-gray-600 text-sm">202 files, 2.6 GB</p>
-                            </div>
-                            <div class="folder-card bg-gray-50 rounded-2xl p-4 border-2 border-gray-200">
-                                <div class="folder-icon text-2xl text-blue-500 mb-2">✏️</div>
-                                <h5 class="font-semibold text-gray-800 mb-1">Sketch Files</h5>
-                                <p class="text-gray-600 text-sm">54 files, 1.2 GB</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="recent-files mb-8">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Recent Files</h4>
-                        <div class="file-item flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-                            <div class="file-icon text-2xl">📄</div>
-                            <div class="file-info">
-                                <h5 class="font-medium text-gray-800">My story_2024.doc</h5>
-                                <p class="text-gray-600 text-sm">202 files, 2.6 GB</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="global-stats mb-6">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Global Statistics</h4>
-                        <div class="stats-grid grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
-                                <h5 class="text-lg font-bold text-gray-800">58 GB</h5>
-                                <p class="text-gray-600 text-sm">Storage Available</p>
-                            </div>
-                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
-                                <h5 class="text-lg font-bold text-gray-800">128 GB</h5>
-                                <p class="text-gray-600 text-sm">Total Storage</p>
-                            </div>
-                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
-                                <h5 class="text-lg font-bold text-gray-800">58 GB</h5>
-                                <p class="text-gray-600 text-sm">Storage Used</p>
-                            </div>
-                            <div class="stat-card bg-gray-50 rounded-xl p-4 text-center">
-                                <h5 class="text-lg font-bold text-gray-800">Clean</h5>
-                                <p class="text-gray-600 text-sm">Junk Files</p>
-                            </div>
-                        </div>
-                        
-                        <div class="storage-breakdown mb-6">
-                            <div class="storage-item flex justify-between py-2 border-b border-gray-200">
-                                <span class="text-gray-700">Documents</span>
-                                <span class="text-gray-600">31.6 GB • 1233 files</span>
-                            </div>
-                            <div class="storage-item flex justify-between py-2">
-                                <span class="text-gray-700">Photos</span>
-                                <span class="text-gray-600">15 GB • 656 files</span>
-                            </div>
-                        </div>
-
-                        <p class="text-gray-600 mb-4 text-sm">Boost your storage to make it more optimal and spacious space.</p>
-                        
-                        <button class="clean-btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-colors">
-                            Clean Junk
-                        </button>
-                    </div>
-
-                    <div class="file-nav flex justify-between bg-gray-100 rounded-xl p-1">
-                        <button class="nav-btn active bg-white text-blue-500 px-4 py-2 rounded-lg font-medium">Home</button>
-                        <button class="nav-btn px-4 py-2 rounded-lg font-medium text-gray-600">Folders</button>
-                        <button class="nav-btn px-4 py-2 rounded-lg font-medium text-gray-600">Clean</button>
-                        <button class="nav-btn px-4 py-2 rounded-lg font-medium text-gray-600">Settings</button>
-                    </div>
-                </div>
-                
-                <div class="user-profile bg-white rounded-2xl p-4 md:p-6 shadow-md text-center">
-                    <div class="flex flex-col items-center">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 mb-3"></div>
-                        <h4 class="font-bold text-gray-800">@siren.uix</h4>
-                        <p class="text-gray-600">Product Designer</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Wallet Tab Content -->
-            <div id="wallet-tab" class="tab-content hidden">
-                <div class="wallet-section bg-white rounded-2xl p-4 md:p-6 shadow-md mb-6">
-                    <div class="wallet-header flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                        <div class="user-info flex items-center gap-4 mb-4 md:mb-0">
-                            <div class="user-avatar w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-                                MS
-                            </div>
-                            <div>
-                                <h2 class="text-xl font-bold text-gray-800">Michael Samuel</h2>
-                                <p class="text-gray-600">Current Balance: $978.85</p>
-                            </div>
-                        </div>
-                        <div class="card-info bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-3 text-center">
-                            <p class="text-sm">**** **** **** 234</p>
-                            <p class="text-xs">Leg, Date: 03/28</p>
-                        </div>
-                    </div>
-
-                    <div class="balance-card bg-gradient-to-r from-teal-400 to-teal-500 text-white rounded-2xl p-4 md:p-6 mb-6">
-                        <p class="balance-label text-teal-100">Available Balance</p>
-                        <p class="balance-amount text-3xl md:text-4xl font-bold">$678.85</p>
-                    </div>
-
-                    <div class="wallet-actions grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
-                            <div class="action-icon text-2xl text-blue-500 mb-1">💼</div>
-                            <p class="text-xs text-gray-700">Wallet</p>
-                        </div>
-                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
-                            <div class="action-icon text-2xl text-blue-500 mb-1">🔄</div>
-                            <p class="text-xs text-gray-700">Transfer</p>
-                        </div>
-                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
-                            <div class="action-icon text-2xl text-blue-500 mb-1">💳</div>
-                            <p class="text-xs text-gray-700">Pay</p>
-                        </div>
-                        <div class="action-btn bg-gray-50 rounded-xl p-3 text-center border-2 border-gray-200">
-                            <div class="action-icon text-2xl text-blue-500 mb-1">📱</div>
-                            <p class="text-xs text-gray-700">Topup</p>
-                        </div>
-                    </div>
-
-                    <div class="financial-overview grid grid-cols-3 gap-4 mb-6">
-                        <div class="bg-gray-50 rounded-xl p-3 text-center">
-                            <p class="text-gray-600 text-sm">Earning</p>
-                            <p class="text-lg font-bold text-gray-800">$1582.67</p>
-                        </div>
-                        <div class="bg-gray-50 rounded-xl p-3 text-center">
-                            <p class="text-gray-600 text-sm">Saved</p>
-                            <p class="text-lg font-bold text-gray-800">$595.11</p>
-                        </div>
-                        <div class="bg-gray-50 rounded-xl p-3 text-center">
-                            <p class="text-gray-600 text-sm">Available</p>
-                            <p class="text-lg font-bold text-gray-800">$987.56</p>
-                        </div>
-                    </div>
-
-                    <div class="transaction-list">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Recent Transaction</h4>
-                        
-                        <div class="transaction-item flex justify-between items-center py-3 border-b border-gray-200">
-                            <div class="transaction-info">
-                                <h5 class="font-medium text-gray-800">Adobe Collection</h5>
-                                <p class="text-gray-600 text-sm">Payment via wallet can be done $125</p>
-                            </div>
-                            <div class="transaction-amount text-red-500 font-semibold">-$125</div>
-                        </div>
-                        
-                        <div class="transaction-item flex justify-between items-center py-3">
-                            <div class="transaction-info">
-                                <h5 class="font-medium text-gray-800">Ups Uplabs</h5>
-                                <p class="text-gray-600 text-sm">Payment Record $95</p>
-                            </div>
-                            <div class="transaction-amount text-red-500 font-semibold">-$95</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="unpaid-bills bg-white rounded-2xl p-4 md:p-6 shadow-md">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Unpaid Bill</h4>
-                        <div class="tabs flex border-b border-gray-200 mb-4">
-                            <button class="tab active px-4 py-2 font-medium text-blue-500 border-b-2 border-blue-500">All</button>
-                            <button class="tab px-4 py-2 font-medium text-gray-500">Upcoming</button>
-                            <button class="tab px-4 py-2 font-medium text-gray-500">Previous</button>
-                        </div>
-                        
-                        <div class="bill-item flex justify-between items-center py-3 border-b border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                                    D
-                                </div>
-                                <div>
-                                    <h5 class="font-medium text-gray-800">Drübble</h5>
-                                    <p class="text-gray-600 text-sm">Waiting for payment</p>
-                                </div>
-                            </div>
-                            <button class="pay-now bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                Pay Now
-                            </button>
-                        </div>
-                        
-                        <div class="bill-item flex justify-between items-center py-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                                    FA
-                                </div>
-                                <div>
-                                    <h5 class="font-medium text-gray-800">Front Awesome</h5>
-                                    <p class="text-gray-600 text-sm">Payment pending</p>
-                                </div>
-                            </div>
-                            <button class="pay-now bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                Pay Now
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="activity-stats bg-white rounded-2xl p-4 md:p-6 shadow-md">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Activity</h4>
-                        
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <h5 class="font-medium text-gray-700">Statistics</h5>
-                                <span class="text-blue-500 text-sm">View All</span>
-                            </div>
-                            <div class="bg-gray-100 rounded-xl p-4">
-                                <div class="flex justify-between mb-3">
-                                    <span class="text-gray-600">Bank</span>
-                                    <span class="font-medium text-gray-800">65%</span>
-                                </div>
-                                <div class="flex justify-between mb-3">
-                                    <span class="text-gray-600">Economy</span>
-                                    <span class="font-medium text-gray-800">20%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Food</span>
-                                    <span class="font-medium text-gray-800">15%</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <h5 class="font-medium text-gray-700">Limit</h5>
-                                <span class="text-blue-500 text-sm">$105.00 per day</span>
-                            </div>
-                            <div class="bg-gray-100 rounded-xl p-4">
-                                <div class="flex justify-between text-sm text-gray-600 mb-2">
-                                    <span>MON</span>
-                                    <span>TUE</span>
-                                    <span>WED</span>
-                                    <span>THU</span>
-                                    <span>FRI</span>
-                                    <span>SAT</span>
-                                    <span>SUN</span>
-                                </div>
-                                <div class="flex justify-between text-xs">
-                                    <span>17</span>
-                                    <span>18</span>
-                                    <span>19</span>
-                                    <span>20</span>
-                                    <span>21</span>
-                                    <span>22</span>
-                                    <span>23</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="cta">
+        <div class="top-actions">
+          <button id="enterBtn">Enter</button>
+          <button id="adminShortcut" class="hidden">Admin</button>
         </div>
+      </div>
     </div>
+  </div>
+</header>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching functionality
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.add('hidden'));
-                    
-                    // Add active class to clicked button
-                    button.classList.add('active');
-                    
-                    // Show corresponding content
-                    const tabId = button.getAttribute('data-tab') + '-tab';
-                    document.getElementById(tabId).classList.remove('hidden');
-                });
-            });
-            
-            // File navigation buttons
-            const fileNavButtons = document.querySelectorAll('.file-nav .nav-btn');
-            fileNavButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    fileNavButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                });
-            });
-            
-            // Bill tabs
-            const billTabs = document.querySelectorAll('.unpaid-bills .tab');
-            billTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    billTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                });
-            });
-        });
-    </script>
+<!-- MAIN -->
+<main class="container" id="app" style="display:none">
+  <div class="topbar" id="topbar">
+    <div id="navAdminLinks" class="hidden admin-badge">Admin</div>
+    <div id="userInfo"></div>
+    <div style="margin-left:auto" class="flex">
+      <button id="goLanding">Back</button>
+      <button id="logoutBtn" class="hidden">Logout</button>
+    </div>
+  </div>
+
+  <div id="views">
+    <!-- HUB VIEW -->
+    <section id="hubView">
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:12px">
+          <div class="avatar" id="hubAvatar">LH</div>
+          <div>
+            <h2 id="hubName">Link Hub — ชื่อเพจ</h2>
+            <div class="small-muted" id="hubShort">Short description ของเพจ</div>
+          </div>
+          <div style="margin-left:auto" id="hubActions"></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <h3>เมนูเพื่อน</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div class="small-muted">คลิกเปิดลิงก์ (เปิดแท็บใหม่)</div>
+              <div>
+                <button id="btnAddTile" class="hidden">+ Add tile</button>
+              </div>
+            </div>
+            <div id="tilesWrap" class="tiles" style="margin-top:12px"></div>
+          </div>
+
+          <div class="card feed" style="margin-top:14px">
+            <h3>โพสต์</h3>
+
+            <!-- Post composer -->
+            <div id="postComposer" class="card" style="margin-bottom:12px">
+              <label class="block">ประเภท</label>
+              <select id="postType"><option value="ttb">ttb</option><option value="PRU">PRU</option></select>
+              <label class="block">Zone</label>
+              <select id="postZone">
+                <option>ราชบุรี</option><option>สมุทรสาคร</option><option>สุราษฎานี</option><option>หาดใหญ่</option><option>ภูเก็ต</option>
+              </select>
+              <label class="block">ชื่อ (นามแฝง)</label>
+              <input id="postName" type="text" placeholder="ชื่อผู้โพสต์">
+              <label class="block">ข้อความ</label>
+              <textarea id="postContent" placeholder="พิมพ์ข้อความ..."></textarea>
+              <label class="block">แนบรูป (optional)</label>
+              <input id="postImage" type="file" accept="image/*">
+              <img id="postImagePreview" class="image-preview hidden">
+              <div style="margin-top:8px; display:flex; gap:8px; align-items:center">
+                <label><input id="humanCheck" type="checkbox"> ฉันไม่ใช่บอท (simple CAPTCHA)</label>
+                <button id="btnPost">Post</button>
+                <small class="small-muted" id="rateInfo"></small>
+              </div>
+              <div class="small-muted" style="margin-top:8px">ฟิลด์ที่จำเป็น: ประเภท, Zone, ชื่อ, ข้อความ</div>
+            </div>
+
+            <div id="feedList"></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4>Pinned / Quick</h4>
+            <div id="pinnedLinks" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h4>Quick Stats</h4>
+            <div id="quickStats" class="list"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ADMIN VIEWS -->
+    <section id="adminView" class="hidden">
+      <nav class="card admin-nav">
+        <button data-admin-route="dashboard" class="admin-route">Dashboard</button>
+        <button data-admin-route="menus" class="admin-route">Menus</button>
+        <button data-admin-route="posts" class="admin-route">Posts</button>
+        <button data-admin-route="media" class="admin-route">Media</button>
+        <button data-admin-route="settings" class="admin-route">Settings</button>
+        <button id="adminLogout">Logout Admin</button>
+      </nav>
+
+      <div id="adminContent" class="card"></div>
+    </section>
+  </div>
+</main>
+
+<!-- ADMIN LOGIN MODAL / PAGE -->
+<div id="adminLoginModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">
+  <div class="card" style="width:420px; padding:16px;">
+    <h3>Admin Login</h3>
+    <label class="block">Email / Username</label>
+    <input id="adminUser" type="text">
+    <label class="block">Password</label>
+    <input id="adminPass" type="password">
+    <label style="margin-top:8px"><input id="adminRemember" type="checkbox"> จำฉันไว้</label>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button id="btnAdminLogin">Login</button>
+      <button id="btnAdminLoginCancel">Cancel</button>
+    </div>
+    <div id="adminLoginMsg" class="small-muted" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ENTRY PASSWORD MODAL -->
+<div id="entryModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">
+  <div class="card" style="width:420px; padding:16px;">
+    <h3>Protected Entry — ใส่รหัส</h3>
+    <label class="block">Password</label>
+    <input id="entryPassword" type="password">
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button id="btnEntryOk">Enter</button>
+      <button id="btnEntryCancel">Cancel</button>
+    </div>
+    <div id="entryMsg" class="small-muted" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<footer>Prototype — เก็บข้อมูลใน localStorage เท่านั้น | Zones: ราชบุรี, สมุทรสาคร, สุราษฎานี, หาดใหญ่, ภูเก็ต</footer>
+
+<script>
+/* =======================
+   Data model in localStorage
+   keys:
+     hub_config: {public_entry: true, site_password: '...', siteTitle, siteDesc}
+     hub_tiles: [ {id, title, desc, iconBase64, url, order} ]
+     hub_posts: [ {id, type, zone, name, content, imageBase64, status, createdAt, reactions: {👍🏻:[],👏🏻:[],...}} ]
+     hub_admins: [ {user, passHash} ]  // for demo store simple password plaintext (NOT SECURE)
+     hub_currentAdmin: {user, remember} // when logged in
+     hub_userId: uuid per browser to limit reactions
+   NOTE: This is demo only.
+   ======================= */
+
+const DEFAULTS = {
+  config: { public_entry: true, site_password: 'hubdemo', siteTitle:'Link Hub — ชื่อเพจ', siteDesc:'รวมลิงก์สำคัญ และพื้นที่โพสต์สำหรับโซนต่าง ๆ' },
+  zones: ['ราชบุรี','สมุทรสาคร','สุราษฎานี','หาดใหญ่','ภูเก็ต'],
+  reactionTypes: ['👍🏻','👏🏻','🙏','✌🏻','❤️','🔥','✅','💰']
+};
+
+function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function load(key, fallback){ try{ const v=localStorage.getItem(key); return v? JSON.parse(v): fallback }catch(e){return fallback}}
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val))}
+
+// Initialize on first run
+if(!load('hub_config')) save('hub_config', DEFAULTS.config)
+if(!load('hub_tiles')) save('hub_tiles', [
+  {id:uid('t'), title:'เว็บหลัก', desc:'เว็บไซต์บริษัท', iconBase64:'', url:'https://example.com', order:1},
+  {id:uid('t'), title:'Contact', desc:'ติดต่อเรา', iconBase64:'', url:'mailto:contact@example.com', order:2}
+])
+if(!load('hub_posts')) save('hub_posts', [])
+if(!load('hub_admins')) save('hub_admins', [{user:'admin@example.com', pass:'admin123', role:'super'}])
+if(!localStorage.getItem('hub_userId')) localStorage.setItem('hub_userId', uid('u'))
+
+/* ====== Helpers & UI glue ====== */
+
+const app = document.getElementById('app')
+const landingHeader = document.getElementById('landingHeader')
+const enterBtn = document.getElementById('enterBtn')
+const entryModal = document.getElementById('entryModal')
+const btnEntryOk = document.getElementById('btnEntryOk')
+const btnEntryCancel = document.getElementById('btnEntryCancel')
+const entryPassword = document.getElementById('entryPassword')
+const entryMsg = document.getElementById('entryMsg')
+const adminShortcut = document.getElementById('adminShortcut')
+const adminLoginModal = document.getElementById('adminLoginModal')
+const btnAdminLogin = document.getElementById('btnAdminLogin')
+const btnAdminLoginCancel = document.getElementById('btnAdminLoginCancel')
+const adminUser = document.getElementById('adminUser')
+const adminPass = document.getElementById('adminPass')
+const adminRemember = document.getElementById('adminRemember')
+const adminLoginMsg = document.getElementById('adminLoginMsg')
+const hubView = document.getElementById('hubView')
+const adminView = document.getElementById('adminView')
+const adminContent = document.getElementById('adminContent')
+const navAdminLinks = document.getElementById('navAdminLinks')
+const userInfo = document.getElementById('userInfo')
+const logoutBtn = document.getElementById('logoutBtn')
+const goLanding = document.getElementById('goLanding')
+const hubName = document.getElementById('hubName')
+const hubShort = document.getElementById('hubShort')
+const tilesWrap = document.getElementById('tilesWrap')
+const btnAddTile = document.getElementById('btnAddTile')
+const feedList = document.getElementById('feedList')
+const postType = document.getElementById('postType')
+const postZone = document.getElementById('postZone')
+const postName = document.getElementById('postName')
+const postContent = document.getElementById('postContent')
+const postImage = document.getElementById('postImage')
+const postImagePreview = document.getElementById('postImagePreview')
+const humanCheck = document.getElementById('humanCheck')
+const btnPost = document.getElementById('btnPost')
+const quickStats = document.getElementById('quickStats')
+const pinnedLinks = document.getElementById('pinnedLinks')
+const postComposer = document.getElementById('postComposer')
+const siteTitleEl = document.getElementById('siteTitle')
+const siteDescEl = document.getElementById('siteDesc')
+const hubAvatar = document.getElementById('hubAvatar')
+
+let config = load('hub_config')
+let tiles = load('hub_tiles')
+let posts = load('hub_posts')
+let admins = load('hub_admins')
+let currentAdmin = load('hub_currentAdmin') || null
+const userId = localStorage.getItem('hub_userId')
+const reactionTypes = DEFAULTS.reactionTypes
+
+// Render initial
+siteTitleEl.textContent = config.siteTitle
+siteDescEl.textContent = config.siteDesc
+hubName.textContent = config.siteTitle
+hubShort.textContent = config.siteDesc
+hubAvatar.textContent = config.siteTitle.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()
+
+// Entry logic
+enterBtn.addEventListener('click', () => {
+  config = load('hub_config')
+  if(config.public_entry) openHub()
+  else {
+    entryPassword.value=''
+    entryMsg.textContent=''
+    entryModal.classList.remove('hidden')
+  }
+})
+
+btnEntryOk.addEventListener('click', ()=>{
+  const v = entryPassword.value.trim()
+  if(!v){ entryMsg.textContent='กรุณาใส่รหัส' ; return }
+  config = load('hub_config')
+  if(v === config.site_password){ entryModal.classList.add('hidden'); openHub(); }
+  else { entryMsg.textContent='รหัสไม่ถูกต้อง' }
+})
+btnEntryCancel.addEventListener('click', ()=> entryModal.classList.add('hidden'))
+
+// Admin shortcut (visible if admin session present)
+function updateAdminShortcut(){
+  currentAdmin = load('hub_currentAdmin')
+  if(currentAdmin && currentAdmin.user){
+    adminShortcut.classList.remove('hidden')
+    navAdminLinks.classList.remove('hidden')
+    logoutBtn.classList.remove('hidden')
+    userInfo.innerHTML = `<span class="small-muted">Admin: ${currentAdmin.user}</span>`
+    adminShortcut.onclick = () => openAdmin('dashboard')
+  } else {
+    adminShortcut.classList.add('hidden')
+    navAdminLinks.classList.add('hidden')
+    logoutBtn.classList.add('hidden')
+    userInfo.textContent = ''
+  }
+}
+updateAdminShortcut()
+
+// Admin login modal flow
+adminShortcut.addEventListener('click', ()=> {
+  if(load('hub_currentAdmin')) openAdmin('dashboard')
+  else {
+    adminLoginModal.classList.remove('hidden')
+    adminLoginMsg.textContent=''
+    adminUser.value=''; adminPass.value=''; adminRemember.checked=false
+  }
+})
+btnAdminLoginCancel.addEventListener('click', ()=> adminLoginModal.classList.add('hidden'))
+
+btnAdminLogin.addEventListener('click', ()=> {
+  const u = adminUser.value.trim(), p = adminPass.value
+  if(!u||!p){ adminLoginMsg.textContent='ระบุ user & password'; return }
+  admins = load('hub_admins')
+  const found = admins.find(a=>a.user===u && a.pass===p)
+  if(found){
+    save('hub_currentAdmin', {user:u, remember: adminRemember.checked, role: found.role || 'moderator'})
+    adminLoginMsg.textContent='login success'
+    adminLoginModal.classList.add('hidden')
+    updateAdminShortcut()
+    openAdmin('dashboard')
+  } else { adminLoginMsg.textContent='invalid credentials' }
+})
+
+// Logout
+document.getElementById('adminLogout').addEventListener('click', ()=> {
+  localStorage.removeItem('hub_currentAdmin')
+  updateAdminShortcut()
+  adminView.classList.add('hidden')
+  hubView.classList.remove('hidden')
+})
+logoutBtn.addEventListener('click', ()=> {
+  localStorage.removeItem('hub_currentAdmin')
+  updateAdminShortcut()
+  alert('Admin logged out on this device')
+})
+
+// Go back to landing
+goLanding.addEventListener('click', ()=> {
+  app.style.display='none'
+  landingHeader.style.display='block'
+})
+
+// Open hub
+function openHub(){
+  landingHeader.style.display='none'
+  app.style.display='block'
+  renderTiles()
+  renderFeed()
+  renderQuickStats()
+  renderPinned()
+  updateAdminShortcut()
+  // show admin nav if admin logged in
+  if(load('hub_currentAdmin')) {
+    document.getElementById('hubActions').innerHTML = '<button onclick="openAdmin(\'dashboard\')">Admin panel</button>'
+  } else document.getElementById('hubActions').innerHTML = ''
+}
+
+// Tiles UI
+function renderTiles(){
+  tiles = load('hub_tiles')
+  tilesWrap.innerHTML = ''
+  tiles.sort((a,b)=> (a.order||0)-(b.order||0))
+  tiles.forEach(t=>{
+    const div = document.createElement('div'); div.className='tile card'
+    const img = document.createElement('img'); img.src = t.iconBase64 || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="#eef"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#889" font-size="14">${(t.title||'')}</text></svg>`)
+    const meta = document.createElement('div'); meta.className='meta'
+    meta.innerHTML = `<strong>${t.title}</strong><small>${t.desc||''}</small>`
+    const actions = document.createElement('div')
+    actions.style.marginLeft='8px'
+    if(load('hub_currentAdmin')) {
+      const edit = document.createElement('button'); edit.textContent='Edit'; edit.style.background='#666'; edit.onclick = ()=> openTileEditor(t.id)
+      const del = document.createElement('button'); del.textContent='Del'; del.style.background='#c33'; del.onclick = ()=> { if(confirm('Delete?')){ tiles = tiles.filter(x=>x.id!==t.id); save('hub_tiles',tiles); renderTiles(); } }
+      actions.appendChild(edit); actions.appendChild(del)
+    }
+    div.appendChild(img); div.appendChild(meta); div.appendChild(actions)
+    div.onclick = (e)=> {
+      // open link only if clicked tile area, not admin buttons
+      if(e.target.tagName.toLowerCase()==='button') return
+      window.open(t.url, '_blank')
+      // increment click stat
+      t.clicks = (t.clicks||0)+1; save('hub_tiles', tiles)
+      renderQuickStats()
+    }
+    tilesWrap.appendChild(div)
+  })
+  btnAddTile.classList.toggle('hidden', !load('hub_currentAdmin'))
+}
+
+// Tile editor (simple prompt-based)
+function openTileEditor(id=null){
+  const isNew = !id
+  const t = isNew ? {id:uid('t'), title:'', desc:'', url:'', iconBase64:'', order: (tiles.length+1)} : tiles.find(x=>x.id===id)
+  // build a small modal-like UI (quick)
+  const wrap = document.createElement('div'); wrap.className='card'
+  wrap.style.position='fixed'; wrap.style.left='50%'; wrap.style.top='50%'; wrap.style.transform='translate(-50%,-50%)'; wrap.style.zIndex=9999; wrap.style.width='420px'
+  wrap.innerHTML = `
+    <h3>${isNew?'Create Tile':'Edit Tile'}</h3>
+    <label class="block">Title</label><input id="t_title" type="text" value="${t.title||''}">
+    <label class="block">Desc (optional)</label><input id="t_desc" type="text" value="${t.desc||''}">
+    <label class="block">URL</label><input id="t_url" type="text" value="${t.url||''}">
+    <label class="block">Icon (image)</label><input id="t_icon" type="file" accept="image/*">
+    <div style="display:flex; gap:8px; margin-top:8px"><button id="t_save">Save</button><button id="t_cancel">Cancel</button></div>
+  `
+  document.body.appendChild(wrap)
+  const inpIcon = wrap.querySelector('#t_icon'), t_title = wrap.querySelector('#t_title'), t_desc = wrap.querySelector('#t_desc'), t_url = wrap.querySelector('#t_url')
+  inpIcon.addEventListener('change', e=>{
+    const f = e.target.files[0]; if(!f) return
+    const r = new FileReader(); r.onload = ()=> t.iconBase64 = r.result; r.readAsDataURL(f)
+  })
+  wrap.querySelector('#t_cancel').onclick = ()=> document.body.removeChild(wrap)
+  wrap.querySelector('#t_save').onclick = ()=>{
+    t.title = t_title.value.trim()||'Untitled'
+    t.desc = t_desc.value.trim()
+    t.url = t_url.value.trim()||'#'
+    if(isNew) tiles.push(t); save('hub_tiles', tiles); renderTiles(); document.body.removeChild(wrap)
+  }
+}
+
+// Post composer
+let lastPostTs = 0
+postImage.addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) { postImagePreview.classList.add('hidden'); return }
+  const r = new FileReader(); r.onload = ()=> { postImagePreview.src = r.result; postImagePreview.classList.remove('hidden'); postImagePreview.dataset.src = r.result; }
+  r.readAsDataURL(f)
+})
+btnPost.addEventListener('click', ()=>{
+  // basic validation + rate limit + captcha
+  const type = postType.value, zone = postZone.value, name = postName.value.trim(), content = postContent.value.trim()
+  if(!type||!zone||!name||!content){ alert('กรอกฟิลด์ที่จำเป็นให้ครบ'); return }
+  if(!humanCheck.checked){ alert('ยืนยันว่าคุณไม่ใช่บอท'); return }
+  const now = Date.now()
+  if(now - lastPostTs < 30*1000){ alert('Rate limit: โปรดรอ 30 วินาทีก่อนโพสต์ครั้งต่อไป'); return }
+  lastPostTs = now
+  const img = postImagePreview.dataset.src || ''
+  const p = { id: uid('p'), type, zone, name, content, imageBase64: img, status: (load('hub_config').auto_publish? 'published' : 'pending'), createdAt: now, reactions: {} }
+  reactionTypes.forEach(r=> p.reactions[r]=[])
+  posts = load('hub_posts')
+  posts.unshift(p)
+  save('hub_posts', posts)
+  // reset
+  postName.value=''; postContent.value=''; postImage.value=''; postImagePreview.classList.add('hidden'); humanCheck.checked=false
+  renderFeed()
+  renderQuickStats()
+  alert('โพสต์ถูกส่งเรียบร้อย' + (p.status==='pending'?' (รออนุมัติ)':''))
+})
+
+// Render feed
+function renderFeed(){
+  posts = load('hub_posts')
+  feedList.innerHTML = ''
+  posts.forEach(post=>{
+    if(post.status === 'removed') return
+    // visitors see only published
+    if(!isAdmin() && post.status !== 'published') return
+    const box = document.createElement('div'); box.className='post card'
+    const header = document.createElement('div'); header.className='post-header'
+    header.innerHTML = `<div style="width:44px;height:44px;border-radius:50%;background:#eef;display:flex;align-items:center;justify-content:center">${post.name[0]||'U'}</div>
+      <div style="flex:1"><strong>${post.name}</strong> <div class="small-muted zone-tag">${post.type} • ${post.zone}</div></div>
+      <div class="small-muted">${new Date(post.createdAt).toLocaleString()}</div>`
+    const body = document.createElement('div'); body.className='post-body'
+    body.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(post.content)}</div>`
+    if(post.imageBase64){ const im = document.createElement('img'); im.src = post.imageBase64; im.className='image-preview'; body.appendChild(im) }
+    // reactions
+    const reCont = document.createElement('div'); reCont.className='reactions'
+    reactionTypes.forEach(r=>{
+      const btn = document.createElement('button'); btn.className='reaction-btn'; btn.textContent = r + ' ' + (post.reactions[r]?.length||0)
+      btn.onclick = ()=> toggleReaction(post.id, r)
+      reCont.appendChild(btn)
+    })
+    // admin actions
+    const adminActions = document.createElement('div'); adminActions.style.marginTop='8px'
+    if(isAdmin()){
+      const approve = document.createElement('button'); approve.textContent = post.status==='published'?'Hide':'Publish'; approve.style.background='#0a8'; approve.onclick = ()=> { post.status = post.status==='published'?'hidden':'published'; saveStatus(post.id, post.status); renderFeed(); }
+      const edit = document.createElement('button'); edit.textContent='Edit'; edit.style.background='#666'; edit.onclick = ()=> openPostEditor(post.id)
+      const del = document.createElement('button'); del.textContent='Remove'; del.style.background='#c33'; del.onclick = ()=> { if(confirm('Remove permanently?')){ setPostStatus(post.id,'removed'); renderFeed(); } }
+      adminActions.appendChild(approve); adminActions.appendChild(edit); adminActions.appendChild(del)
+      // show status
+      const st = document.createElement('div'); st.className='small-muted'; st.textContent = 'Status: ' + post.status; adminActions.appendChild(st)
+    }
+    box.appendChild(header); box.appendChild(body); box.appendChild(reCont); box.appendChild(adminActions)
+    feedList.appendChild(box)
+  })
+}
+
+// Reaction logic: each user can react once per reaction type; allow multiple different reactions
+function toggleReaction(postId, reaction){
+  posts = load('hub_posts')
+  const p = posts.find(x=>x.id===postId); if(!p) return
+  const list = p.reactions[reaction] || []
+  const idx = list.indexOf(userId)
+  if(idx===-1) list.push(userId) // add
+  else list.splice(idx,1) // remove
+  p.reactions[reaction]=list
+  save('hub_posts', posts)
+  renderFeed()
+  renderQuickStats()
+}
+
+// Admin helpers
+function isAdmin(){ return !!load('hub_currentAdmin') }
+window.openAdmin = function(route='dashboard'){
+  // show admin view
+  hubView.classList.add('hidden')
+  adminView.classList.remove('hidden')
+  adminContent.innerHTML = ''
+  renderAdminRoute(route)
+}
+
+function renderAdminRoute(route){
+  adminContent.innerHTML = ''
+  if(route==='dashboard') {
+    adminContent.innerHTML = '<h3>Admin Dashboard</h3><div id="dashStats"></div><div style="margin-top:12px"><button id="quickMenus">Manage Menus</button> <button id="quickPosts">Moderate Posts</button></div>'
+    document.getElementById('quickMenus').onclick = ()=> renderAdminRoute('menus')
+    document.getElementById('quickPosts').onclick = ()=> renderAdminRoute('posts')
+    const ds = document.getElementById('dashStats'); ds.innerHTML = ''
+    const postsData = load('hub_posts') || []
+    const total = postsData.length
+    const pending = postsData.filter(p=>p.status==='pending').length
+    const published = postsData.filter(p=>p.status==='published').length
+    const hidden = postsData.filter(p=>p.status==='hidden').length
+    ds.innerHTML = `<div class="list"><div>Total posts: ${total}</div><div>Published: ${published}</div><div>Pending: ${pending}</div><div>Hidden: ${hidden}</div></div>`
+    return
+  }
+  if(route==='menus'){
+    adminContent.innerHTML = '<h3>Manage Tiles / Menus</h3><div id="menusList"></div><div style="margin-top:8px"><button id="createTile">Create Tile</button></div>'
+    const ml = document.getElementById('menusList'); ml.innerHTML=''
+    tiles = load('hub_tiles')
+    tiles.forEach(t=>{
+      const r = document.createElement('div'); r.className='card'; r.style.display='flex'; r.style.justifyContent='space-between'; r.style.alignItems='center'; r.style.marginTop='8px'
+      r.innerHTML = `<div><strong>${t.title}</strong><div class="small-muted">${t.url}</div></div>`
+      const controls = document.createElement('div')
+      const up = document.createElement('button'); up.textContent='Up'; up.onclick = ()=> { t.order = (t.order||0)-1; save('hub_tiles', tiles); renderAdminRoute('menus'); renderTiles(); }
+      const down = document.createElement('button'); down.textContent='Down'; down.onclick = ()=> { t.order = (t.order||0)+1; save('hub_tiles', tiles); renderAdminRoute('menus'); renderTiles(); }
+      const edit = document.createElement('button'); edit.textContent='Edit'; edit.onclick = ()=> openTileEditor(t.id)
+      const del = document.createElement('button'); del.textContent='Delete'; del.onclick = ()=> { if(confirm('Delete?')){ tiles = tiles.filter(x=>x.id!==t.id); save('hub_tiles', tiles); renderAdminRoute('menus'); renderTiles(); } }
+      controls.appendChild(up); controls.appendChild(down); controls.appendChild(edit); controls.appendChild(del)
+      r.appendChild(controls); ml.appendChild(r)
+    })
+    document.getElementById('createTile').onclick = ()=> openTileEditor(null)
+    return
+  }
+  if(route==='posts'){
+    posts = load('hub_posts') || []
+    adminContent.innerHTML = '<h3>Moderation Queue</h3><div id="modList"></div>'
+    const ml = document.getElementById('modList')
+    posts.forEach(p=>{
+      const r = document.createElement('div'); r.className='card'; r.style.marginTop='8px'
+      r.innerHTML = `<div><strong>${p.name}</strong> <span class="small-muted">[${p.type} • ${p.zone}]</span><div class="small-muted">${new Date(p.createdAt).toLocaleString()}</div><div style="margin-top:8px">${escapeHtml(p.content)}</div></div>`
+      const controls = document.createElement('div'); controls.style.marginTop='8px'
+      const approve = document.createElement('button'); approve.textContent='Publish'; approve.onclick = ()=>{ setPostStatus(p.id,'published'); renderAdminRoute('posts'); renderFeed(); renderQuickStats(); }
+      const hide = document.createElement('button'); hide.textContent='Hide'; hide.onclick = ()=>{ setPostStatus(p.id,'hidden'); renderAdminRoute('posts'); renderFeed(); }
+      const edit = document.createElement('button'); edit.textContent='Edit'; edit.onclick = ()=> openPostEditor(p.id)
+      const remove = document.createElement('button'); remove.textContent='Remove'; remove.onclick = ()=>{ if(confirm('Remove permanently?')){ setPostStatus(p.id,'removed'); renderAdminRoute('posts'); renderFeed(); } }
+      controls.appendChild(approve); controls.appendChild(hide); controls.appendChild(edit); controls.appendChild(remove)
+      r.appendChild(controls)
+      ml.appendChild(r)
+    })
+    return
+  }
+  if(route==='settings'){
+    adminContent.innerHTML = `<h3>Settings</h3>
+      <label class="block">Site Title</label><input id="s_title" value="${config.siteTitle}">
+      <label class="block">Site Description</label><input id="s_desc" value="${config.siteDesc}">
+      <label class="block">Access Mode</label>
+      <label><input id="s_public" type="checkbox"> Public entry (if unchecked → protected)</label>
+      <label class="block">Site-wide password (for Protected)</label><input id="s_password" type="text" value="${config.site_password}">
+      <label style="margin-top:8px"><input id="s_auto_pub" type="checkbox"> Auto-publish posts (no moderation)</label>
+      <div style="margin-top:12px"><button id="s_save">Save Settings</button></div>`
+    document.getElementById('s_public').checked = config.public_entry
+    document.getElementById('s_auto_pub').checked = config.auto_publish || false
+    document.getElementById('s_save').onclick = ()=>{
+      config.siteTitle = document.getElementById('s_title').value
+      config.siteDesc = document.getElementById('s_desc').value
+      config.public_entry = document.getElementById('s_public').checked
+      config.site_password = document.getElementById('s_password').value || config.site_password
+      config.auto_publish = document.getElementById('s_auto_pub').checked
+      save('hub_config', config)
+      siteTitleEl.textContent = config.siteTitle; siteDescEl.textContent = config.siteDesc; hubName.textContent = config.siteTitle; hubShort.textContent = config.siteDesc
+      alert('Saved settings')
+    }
+    return
+  }
+  if(route==='media'){
+    adminContent.innerHTML = `<h3>Media</h3><div class="small-muted">Upload cover/avatar images (saved to localStorage)</div>
+      <label class="block">Upload Cover (preview only)</label><input id="m_cover" type="file" accept="image/*">
+      <label class="block">Upload Avatar</label><input id="m_avatar" type="file" accept="image/*">
+      <div style="margin-top:8px"><button id="m_save">Apply</button></div>`
+    document.getElementById('m_save').onclick = ()=>{
+      const c = document.getElementById('m_cover').files[0], a = document.getElementById('m_avatar').files[0]
+      if(c){
+        const r = new FileReader(); r.onload = ()=> { config.cover = r.result; save('hub_config', config); landingHeader.style.backgroundImage = `url(${r.result})`; alert('Cover applied') }; r.readAsDataURL(c)
+      }
+      if(a){
+        const r2 = new FileReader(); r2.onload = ()=> { config.avatar = r2.result; save('hub_config', config); hubAvatar.style.backgroundImage = `url(${r2.result})`; hubAvatar.textContent=''; alert('Avatar applied') }; r2.readAsDataURL(a)
+      }
+    }
+    return
+  }
+  adminContent.innerHTML = '<div>Route not found</div>'
+}
+
+// Post editor
+function openPostEditor(id){
+  const p = load('hub_posts').find(x=>x.id===id); if(!p) return
+  const wrap = document.createElement('div'); wrap.className='card'; wrap.style.position='fixed'; wrap.style.left='50%'; wrap.style.top='50%'; wrap.style.transform='translate(-50%,-50%)'; wrap.style.zIndex=9999; wrap.style.width='500px'
+  wrap.innerHTML = `<h3>Edit Post</h3>
+    <label class="block">Name</label><input id="ep_name" value="${p.name}">
+    <label class="block">Content</label><textarea id="ep_content">${escapeHtml(p.content)}</textarea>
+    <label class="block">Status</label><select id="ep_status"><option value="pending">pending</option><option value="published">published</option><option value="hidden">hidden</option></select>
+    <div style="margin-top:8px"><button id="ep_save">Save</button> <button id="ep_cancel">Cancel</button></div>`
+  document.body.appendChild(wrap)
+  document.getElementById('ep_status').value = p.status
+  wrap.querySelector('#ep_cancel').onclick = ()=> document.body.removeChild(wrap)
+  wrap.querySelector('#ep_save').onclick = ()=>{
+    p.name = document.getElementById('ep_name').value
+    p.content = document.getElementById('ep_content').value
+    p.status = document.getElementById('ep_status').value
+    const all = load('hub_posts').map(x=> x.id===p.id? p: x)
+    save('hub_posts', all)
+    document.body.removeChild(wrap)
+    renderFeed(); renderQuickStats(); renderAdminRoute('posts')
+  }
+}
+
+// Utilities
+function setPostStatus(id, status){
+  posts = load('hub_posts').map(p=> p.id===id? {...p, status}:p)
+  save('hub_posts', posts)
+}
+function saveStatus(id, status){
+  posts = load('hub_posts')
+  const p = posts.find(x=>x.id===id)
+  if(p){ p.status = status; save('hub_posts', posts) }
+  renderFeed()
+}
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') }
+
+// Stats
+function renderQuickStats(){
+  posts = load('hub_posts') || []
+  const total = posts.length
+  const published = posts.filter(p=>p.status==='published').length
+  const pending = posts.filter(p=>p.status==='pending').length
+  quickStats.innerHTML = `<div>Total posts: ${total}</div><div>Published: ${published}</div><div>Pending: ${pending}</div>`
+  // top tiles by clicks
+  tiles = load('hub_tiles') || []
+  pinnedLinks.innerHTML = ''
+  tiles.slice(0,4).forEach(t=>{
+    const a = document.createElement('a'); a.href=t.url; a.target='_blank'; a.textContent = t.title; a.className='small-muted'; a.style.display='block'; pinnedLinks.appendChild(a)
+  })
+}
+
+// Initial open if public_entry true? nope wait for enter
+// Admin nav buttons
+document.querySelectorAll('.admin-route').forEach(b=> b.addEventListener('click', (e)=> renderAdminRoute(e.target.dataset.adminRoute)))
+
+// Small helpers
+document.getElementById('btnAddTile').addEventListener('click', ()=> openTileEditor(null))
+
+// On load show landing
+landingHeader.style.display='block'
+app.style.display='none'
+updateAdminShortcut()
+renderQuickStats()
+
+// simple helper to show admin login if URL has #admin
+if(location.hash === '#admin-login'){ adminLoginModal.classList.remove('hidden') }
+</script>
 </body>
 </html>
