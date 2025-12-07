@@ -1,707 +1,1339 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Link Hub — Prototype</title>
-<style>
-  :root{
-    --primary:#0b4a6f; --muted:#667; --card:#fff; --bg:#f4f7fb;
-  }
-  body{font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai UI", "Sarabun", Arial; background:var(--bg); margin:0; color:#111;}
-  header.cover{background:linear-gradient(90deg, rgba(11,74,111,0.9), rgba(6,94,122,0.8)), url('') center/cover no-repeat; padding:40px 20px; color:#fff;}
-  .container{max-width:1100px; margin:18px auto; padding:0 16px;}
-  .cover-inner{display:flex; gap:16px; align-items:center;}
-  .avatar{width:96px;height:96px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.25); display:flex;align-items:center;justify-content:center;font-weight:700}
-  h1{margin:0;font-size:1.5rem}
-  p.lead{margin:6px 0 0 0; opacity:.95}
-  .cta{margin-left:auto}
-  button, input[type="button"]{background:var(--primary);color:#fff;border:0;padding:8px 12px;border-radius:6px;cursor:pointer}
-  .grid{display:grid; grid-template-columns: 1fr 320px; gap:18px; margin-top:18px;}
-  .card{background:var(--card); padding:12px; border-radius:10px; box-shadow:0 1px 6px rgba(20,20,20,0.06)}
-  .tiles{display:grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap:12px}
-  .tile{display:flex; gap:8px; padding:8px; align-items:center; border-radius:8px; background:#f9fbfd; cursor:pointer}
-  .tile img{width:44px;height:44px;border-radius:8px;object-fit:cover}
-  .tile .meta{flex:1}
-  .tile .meta small{display:block; color:var(--muted); font-size:12px}
-  .feed .post{margin-bottom:12px; border-radius:8px; overflow:hidden}
-  .post .post-header{display:flex; gap:10px; align-items:center; padding:10px; background:#fff}
-  .post .post-body{padding:12px; background:#fff; border-top:1px solid #eee}
-  .post .reactions{display:flex; gap:10px; padding:8px; align-items:center}
-  .reaction-btn{cursor:pointer; background:transparent; border:0; font-size:18px}
-  .small{font-size:12px; color:var(--muted)}
-  .zone-tag{background:#eef7fb;color:var(--primary);padding:4px 8px;border-radius:6px;font-weight:600}
-  .topbar{display:flex; gap:10px; align-items:center; justify-content:flex-end}
-  .admin-badge{background:#ffd; color:#a50; padding:6px 8px; border-radius:8px; font-weight:700}
-  nav.admin-nav{display:flex; gap:8px; margin-bottom:14px}
-  .hidden{display:none}
-  label.block{display:block;margin-top:8px}
-  input[type=text], input[type=password], select, textarea {width:100%; padding:8px;border-radius:6px;border:1px solid #ddd;margin-top:6px}
-  textarea{min-height:90px; resize:vertical}
-  .flex{display:flex; gap:8px; align-items:center}
-  .list{display:flex;flex-direction:column; gap:8px}
-  .small-muted{font-size:12px;color:#666}
-  .top-actions{display:flex; gap:8px; align-items:center}
-  .drag-handle{cursor:grab; padding:6px}
-  .image-preview{max-width:100%; height:auto; display:block; margin-top:8px}
-  footer{max-width:1100px;margin:18px auto;color:#666;font-size:13px}
-  @media(max-width:880px){ .grid{grid-template-columns:1fr} .cover-inner{flex-direction:column; align-items:flex-start} .cta{margin-left:0}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TAX Calculator — Full Fixed</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{
+      --bg:#f8fafc; --card:#ffffff; --muted:#6b7280;
+      --before:#3b82f6; --after:#10b981; --accent:#f59e0b;
+    }
+    html,body,#root { height: 100%; }
+    body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; background:var(--bg); color:#0f172a; font-family:Inter,system-ui,Arial,sans-serif; }
+    /* Bar Chart specific styles */
+    .bar-chart-container { width:100%; max-width:1200px; margin:0 auto; }
+    .chart-bar { transition: all 0.3s ease; }
+    .chart-bar:hover { opacity: 0.8; transform: scale(1.02); }
+    .tooltip {
+      pointer-events:none; position: absolute; background: #111827; color: white; padding:6px 8px; border-radius:6px; font-size:12px; transform: translate(-50%, -120%); white-space:nowrap; opacity:0; transition: opacity .12s;
+    }
+    .animate-pop { transform: translateY(-6px) scale(1.03); }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
 
-<!-- LANDING -->
-<header class="cover" id="landingHeader" style="background:linear-gradient(90deg,#0b4a6f,#06887a); color:#fff;">
-  <div class="container">
-    <div class="cover-inner">
-      <div style="display:flex;gap:12px;align-items:center">
-        <div class="avatar" id="landingAvatar">LH</div>
-        <div>
-          <h1 id="siteTitle">Link Hub — ชื่อเพจ</h1>
-          <p class="lead" id="siteDesc">รวมลิงก์สำคัญ และพื้นที่โพสต์สำหรับโซนต่าง ๆ</p>
-        </div>
-      </div>
-      <div class="cta">
-        <div class="top-actions">
-          <button id="enterBtn">Enter</button>
-          <button id="adminShortcut" class="hidden">Admin</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
+  <div id="root"></div>
 
-<!-- MAIN -->
-<main class="container" id="app" style="display:none">
-  <div class="topbar" id="topbar">
-    <div id="navAdminLinks" class="hidden admin-badge">Admin</div>
-    <div id="userInfo"></div>
-    <div style="margin-left:auto" class="flex">
-      <button id="goLanding">Back</button>
-      <button id="logoutBtn" class="hidden">Logout</button>
-    </div>
-  </div>
+  <script type="module">
+  import React, { useState, useMemo, useRef, useEffect } from "https://esm.sh/react@18.2.0";
+  import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
+  import {
+    Calculator, PieChart, Sliders, BookOpen, Menu, X, ChevronDown,
+    Plus, Info, Lightbulb, ShieldCheck, Activity, HeartPulse,
+    Umbrella, Coins, TrendingUp, CheckCircle, Home, Users, Gift, DownloadCloud,
+    BarChart3, CreditCard, FileText, AlertTriangle
+  } from "https://esm.sh/lucide-react@0.309.0";
 
-  <div id="views">
-    <!-- HUB VIEW -->
-    <section id="hubView">
-      <div class="card">
-        <div style="display:flex; align-items:center; gap:12px">
-          <div class="avatar" id="hubAvatar">LH</div>
-          <div>
-            <h2 id="hubName">Link Hub — ชื่อเพจ</h2>
-            <div class="small-muted" id="hubShort">Short description ของเพจ</div>
-          </div>
-          <div style="margin-left:auto" id="hubActions"></div>
-        </div>
-      </div>
+  /***** Constants & Data (ตามข้อมูลกรมสรรพากร) *****/
+  const INCOME_TYPES = [
+    { 
+      id: 1, 
+      name: '40(1) เงินเดือน/โบนัส', 
+      desc: 'เงินเดือน ค่าจ้าง เงินได้ตลอดชีพ เงินบำนาญ ค่าตอบแทน โบนัส', 
+      deductionDesc: 'หักค่าใช้จ่าย 50% ของเงินได้ แต่ไม่เกิน 100,000 บาท (รวมกับ 40(2))', 
+      defaultRate: 0.5, 
+      hasFixedCap: true,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(1)'
+    },
+    { 
+      id: 2, 
+      name: '40(2) รับทำงานให้', 
+      desc: 'ค่านายหน้า ค่าคอมมิชชั่น ค่าตอบแทนพิเศษ ค่ารับเหมาแรงงาน', 
+      deductionDesc: 'หักค่าใช้จ่าย 50% ของเงินได้ แต่ไม่เกิน 100,000 บาท (รวมกับ 40(1))', 
+      defaultRate: 0.5, 
+      hasFixedCap: true,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(2)'
+    },
+    { 
+      id: 3, 
+      name: '40(3) ค่าลิขสิทธิ์', 
+      desc: 'ค่าลิขสิทธิ์ ค่าGoodwill ค่าแห่งกู๊ดวิล ค่าแห่งสิทธิ', 
+      deductionDesc: 'หักค่าใช้จ่าย 50% ของเงินได้ แต่ไม่เกิน 100,000 บาท หรือตามจริง (เลือกได้)', 
+      defaultRate: 0.5, 
+      hasFixedCap: true,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(3)'
+    },
+    { 
+      id: 4, 
+      name: '40(4) ดอกเบี้ย/เงินปันผล', 
+      desc: 'ดอกเบี้ยเงินฝาก เงินปันผลหุ้น เงินได้จากหุ้นกู้', 
+      deductionDesc: 'ไม่หักค่าใช้จ่าย (ส่วนใหญ่เป็น Final Tax อยู่แล้ว)', 
+      defaultRate: 0, 
+      hasFixedCap: false,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(4)'
+    },
+    { 
+      id: 5, 
+      name: '40(5) ค่าเช่า', 
+      desc: 'ค่าเช่าบ้าน ค่าเช่ารถยนต์ ค่าเช่าที่ดิน ทรัพย์สินอื่นๆ', 
+      deductionDesc: 'หักค่าใช้จ่ายได้ตามจริง หรือใช้วิธีเหมา 10-30% ของเงินได้ (เลือกได้)', 
+      defaultRate: 0.3, 
+      hasFixedCap: false,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(5)'
+    },
+    {
+      id: 6,
+      name: '40(6) วิชาชีพอิสระ',
+      desc: 'ประกอบโรคศิลปะ, กฎหมาย, วิศวกรรม, สถาปัตยกรรม, บัญชี, ประเมินค่าทรัพย์สิน',
+      deductionDesc: 'เลือกอัตราหักค่าใช้จ่าย 30% หรือ 60% ตามเงื่อนไข',
+      defaultRate: 0.3,
+      hasFixedCap: false,
+      subOptions: [
+        { label: 'แพทย์/ประกอบโรคศิลปะ (60%)', rate: 0.6, legalRef: 'ประกาศอธิบดีกรมสรรพากรที่ 172' },
+        { label: 'กฎหมาย/วิศวกร/สถาปัตย์/บัญชี (30%)', rate: 0.3, legalRef: 'ประกาศอธิบดีกรมสรรพากรที่ 172' }
+      ],
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(6)'
+    },
+    { 
+      id: 7, 
+      name: '40(7) รับเหมาก่อสร้าง', 
+      desc: 'รับเหมาก่อสร้างทั้งค่าแรงและค่าของ (รวมค่าออกแบบ)', 
+      deductionDesc: 'หักค่าใช้จ่าย 60% ของเงินได้ หรือตามจริง (เลือกได้)', 
+      defaultRate: 0.6, 
+      hasFixedCap: false,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(7)'
+    },
+    { 
+      id: 8, 
+      name: '40(8) อื่นๆ', 
+      desc: 'ขายของออนไลน์ นักแสดง ธุรกิจพาณิชย์ ธุรกิจอื่นๆ', 
+      deductionDesc: 'หักค่าใช้จ่าย 40-60% ของเงินได้ หรือตามจริง (เลือกได้)', 
+      defaultRate: 0.6, 
+      hasFixedCap: false,
+      legalRef: 'ประมวลรัษฎากร มาตรา 40(8)'
+    },
+  ];
 
-      <div class="grid">
-        <div>
-          <div class="card">
-            <h3>เมนูเพื่อน</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center">
-              <div class="small-muted">คลิกเปิดลิงก์ (เปิดแท็บใหม่)</div>
-              <div>
-                <button id="btnAddTile" class="hidden">+ Add tile</button>
-              </div>
-            </div>
-            <div id="tilesWrap" class="tiles" style="margin-top:12px"></div>
-          </div>
+  const TAX_BRACKETS = [
+    { limit: 150000, rate: 0, description: '150,000 บาทแรก' },
+    { limit: 300000, rate: 0.05, description: '150,001 - 300,000 บาท' },
+    { limit: 500000, rate: 0.10, description: '300,001 - 500,000 บาท' },
+    { limit: 750000, rate: 0.15, description: '500,001 - 750,000 บาท' },
+    { limit: 1000000, rate: 0.20, description: '750,001 - 1,000,000 บาท' },
+    { limit: 2000000, rate: 0.25, description: '1,000,001 - 2,000,000 บาท' },
+    { limit: 5000000, rate: 0.30, description: '2,000,001 - 5,000,000 บาท' },
+    { limit: Infinity, rate: 0.35, description: 'เกิน 5,000,000 บาท' },
+  ];
 
-          <div class="card feed" style="margin-top:14px">
-            <h3>โพสต์</h3>
+  const DEDUCTION_CATEGORIES = [
+    {
+      id: 'personal',
+      title: '1. ส่วนบุคคลและครอบครัว',
+      icon: Users,
+      legalRef: 'ประมวลรัษฎากร มาตรา 47',
+      items: [
+        { key: 'socialSecurity', label: 'เงินสมทบประกันสังคม', desc: 'ตามที่จ่ายจริง, สูงสุด 9,000 บาทต่อปี', max: 9000, isCommon: true, legalRef: 'มาตรา 47(1)' },
+        { key: 'spouse', label: 'คู่สมรส (ไม่มีเงินได้)', desc: '60,000 บาท เงื่อนไข: คู่สมรสไม่มีเงินได้พึงประเมิน', max: 60000, isCommon: true, legalRef: 'มาตรา 47(2)' },
+        { key: 'child', label: 'บุตร (คนละ 30,000 บาท)', desc: 'บุตรที่ชอบด้วยกฎหมายและบุตรบุญธรรม เงื่อนไข: อายุไม่เกิน 25 ปี และกำลังศึกษา', max: null, isCommon: true, legalRef: 'มาตรา 47(3)' },
+        { key: 'parent', label: 'ค่าเลี้ยงดูพ่อ-แม่ (คนละ 30,000 บาท)', desc: 'ตามเงื่อนไข: อายุ 60 ปีขึ้นไป และรายได้ไม่เกิน 30,000 บาทต่อปี', max: null, isCommon: true, legalRef: 'มาตรา 47(4)' },
+        { key: 'disabledSupporter', label: 'อุปการะผู้พิการ/ทุพพลภาพ (คนละ 60,000 บาท)', desc: 'ตามเงื่อนไขที่กฎหมายกำหนด: มีใบรับรองแพทย์', max: null, isCommon: false, legalRef: 'มาตรา 47(5)' },
+        { key: 'childBirth', label: 'ค่าฝากครรภ์/คลอดบุตร', desc: 'ตามที่จ่ายจริง, สูงสุด 60,000 บาทต่อการเกิด', max: 60000, isCommon: false, legalRef: 'มาตรา 47(6)' },
+      ]
+    },
+    {
+      id: 'insurance',
+      title: '2. ประกัน / การออม / การลงทุน',
+      icon: ShieldCheck,
+      legalRef: 'ประมวลรัษฎากร มาตรา 47',
+      items: [
+        { key: 'generalLife', label: 'เบี้ยประกันชีวิตทั่วไป', desc: 'ตามที่จ่ายจริง, สูงสุด 100,000 บาท (รวมกับเบี้ยสุขภาพตัวเอง)', max: 100000, isCommon: true, legalRef: 'มาตรา 47(7)' },
+        { key: 'health', label: 'เบี้ยประกันสุขภาพ (ตัวเอง)', desc: 'สูงสุด 25,000 บาท (รวมใน 1 แสนแรกกับเบี้ยประกันชีวิต)', max: 25000, isCommon: true, legalRef: 'มาตรา 47(7)' },
+        { key: 'pension', label: 'ประกันบำนาญ', desc: '15% ของเงินได้ฯ ไม่เกิน 200,000 บาท', max: 200000, isCommon: true, legalRef: 'มาตรา 47(8)' },
+        { key: 'rmf', label: 'RMF', desc: '30% ของเงินได้ฯ ไม่เกิน 500,000 บาท (รวมกับ SSF/PVD)', max: 500000, isCommon: true, legalRef: 'มาตรา 47(9)' },
+        { key: 'ssf', label: 'SSF', desc: '30% ของเงินได้ฯ ไม่เกิน 200,000 บาท (รวมกับ RMF/PVD)', max: 200000, isCommon: true, legalRef: 'มาตรา 47(10)' },
+        { key: 'thaiesg', label: 'ThaiESG', desc: 'สูงสุด 100,000 บาท (มีเงื่อนไขการลงทุน)', max: 100000, isCommon: false, legalRef: 'ประกาศอธิบดีกรมสรรพากร' },
+        { key: 'providentFund', label: 'กองทุนสำรองเลี้ยงชีพ (PVD)', desc: '15% ของค่าจ้าง (มีเพดานรวม 500,000 กับ RMF/SSF)', max: null, isCommon: false, legalRef: 'มาตรา 47(11)' },
+        { key: 'healthParent', label: 'เบี้ยประกันสุขภาพ (บิดามารดา)', desc: 'สูงสุด 15,000 บาท (เงื่อนไข: บิดามารดาอายุ 60 ปีขึ้นไป)', max: 15000, isCommon: false, legalRef: 'มาตรา 47(12)' },
+      ]
+    },
+    {
+      id: 'donation',
+      title: '3. เงินบริจาค',
+      icon: Gift,
+      legalRef: 'ประมวลรัษฎากร มาตรา 47',
+      items: [
+        { key: 'generalDonation', label: 'เงินบริจาคทั่วไป', desc: 'ตามที่จ่ายจริง, ไม่เกิน 10% ของเงินได้หลังหักค่าลดหย่อนอื่น', max: null, isCommon: true, legalRef: 'มาตรา 47(13)' },
+        { key: 'educationDonation', label: 'บริจาค 2 เท่า (การศึกษา/สถานพยาบาล)', desc: 'หักได้ 2 เท่า, เพดานรวมไม่เกิน 10% ของเงินได้หลังหักค่าลดหย่อนอื่น', max: null, isCommon: false, legalRef: 'มาตรา 47(14)' },
+        { key: 'politicalDonation', label: 'บริจาคให้พรรคการเมือง', desc: 'ตามที่จ่ายจริง, สูงสุด 5,000 บาท', max: 5000, isCommon: false, legalRef: 'พระราชบัญญัติประกอบรัฐธรรมนูญ' },
+      ]
+    },
+    {
+      id: 'special',
+      title: '4. สิทธิพิเศษ / มาตรการรัฐ',
+      icon: Home,
+      legalRef: 'ประมวลรัษฎากร มาตรา 47',
+      items: [
+        { key: 'mortgageInterest', label: 'ดอกเบี้ยสินเชื่อที่อยู่อาศัย', desc: 'ตามที่จ่ายจริง, สูงสุด 50,000 บาท (เฉพาะบ้านหลังแรก)', max: 50000, isCommon: true, legalRef: 'มาตรา 47(15)' },
+      ]
+    },
+  ];
 
-            <!-- Post composer -->
-            <div id="postComposer" class="card" style="margin-bottom:12px">
-              <label class="block">ประเภท</label>
-              <select id="postType"><option value="ttb">ttb</option><option value="PRU">PRU</option></select>
-              <label class="block">Zone</label>
-              <select id="postZone">
-                <option>ราชบุรี</option><option>สมุทรสาคร</option><option>สุราษฎานี</option><option>หาดใหญ่</option><option>ภูเก็ต</option>
-              </select>
-              <label class="block">ชื่อ (นามแฝง)</label>
-              <input id="postName" type="text" placeholder="ชื่อผู้โพสต์">
-              <label class="block">ข้อความ</label>
-              <textarea id="postContent" placeholder="พิมพ์ข้อความ..."></textarea>
-              <label class="block">แนบรูป (optional)</label>
-              <input id="postImage" type="file" accept="image/*">
-              <img id="postImagePreview" class="image-preview hidden">
-              <div style="margin-top:8px; display:flex; gap:8px; align-items:center">
-                <label><input id="humanCheck" type="checkbox"> ฉันไม่ใช่บอท (simple CAPTCHA)</label>
-                <button id="btnPost">Post</button>
-                <small class="small-muted" id="rateInfo"></small>
-              </div>
-              <div class="small-muted" style="margin-top:8px">ฟิลด์ที่จำเป็น: ประเภท, Zone, ชื่อ, ข้อความ</div>
-            </div>
+  /***** Helper Functions *****/
+  const calculateTaxFromNet = (netIncome) => {
+    let taxPayable = 0;
+    let remainingNet = netIncome;
+    let highestBracket = 0;
+    let taxDetails = [];
 
-            <div id="feedList"></div>
-          </div>
-        </div>
+    for (let i = 0; i < TAX_BRACKETS.length; i++) {
+      const current = TAX_BRACKETS[i];
+      const prevLimit = i === 0 ? 0 : TAX_BRACKETS[i-1].limit;
+      const range = current.limit - prevLimit;
 
-        <aside>
-          <div class="card">
-            <h4>Pinned / Quick</h4>
-            <div id="pinnedLinks" style="display:flex;flex-direction:column;gap:8px"></div>
-          </div>
-
-          <div class="card" style="margin-top:12px">
-            <h4>Quick Stats</h4>
-            <div id="quickStats" class="list"></div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- ADMIN VIEWS -->
-    <section id="adminView" class="hidden">
-      <nav class="card admin-nav">
-        <button data-admin-route="dashboard" class="admin-route">Dashboard</button>
-        <button data-admin-route="menus" class="admin-route">Menus</button>
-        <button data-admin-route="posts" class="admin-route">Posts</button>
-        <button data-admin-route="media" class="admin-route">Media</button>
-        <button data-admin-route="settings" class="admin-route">Settings</button>
-        <button id="adminLogout">Logout Admin</button>
-      </nav>
-
-      <div id="adminContent" class="card"></div>
-    </section>
-  </div>
-</main>
-
-<!-- ADMIN LOGIN MODAL / PAGE -->
-<div id="adminLoginModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">
-  <div class="card" style="width:420px; padding:16px;">
-    <h3>Admin Login</h3>
-    <label class="block">Email / Username</label>
-    <input id="adminUser" type="text">
-    <label class="block">Password</label>
-    <input id="adminPass" type="password">
-    <label style="margin-top:8px"><input id="adminRemember" type="checkbox"> จำฉันไว้</label>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button id="btnAdminLogin">Login</button>
-      <button id="btnAdminLoginCancel">Cancel</button>
-    </div>
-    <div id="adminLoginMsg" class="small-muted" style="margin-top:10px"></div>
-  </div>
-</div>
-
-<!-- ENTRY PASSWORD MODAL -->
-<div id="entryModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">
-  <div class="card" style="width:420px; padding:16px;">
-    <h3>Protected Entry — ใส่รหัส</h3>
-    <label class="block">Password</label>
-    <input id="entryPassword" type="password">
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button id="btnEntryOk">Enter</button>
-      <button id="btnEntryCancel">Cancel</button>
-    </div>
-    <div id="entryMsg" class="small-muted" style="margin-top:10px"></div>
-  </div>
-</div>
-
-<footer>Prototype — เก็บข้อมูลใน localStorage เท่านั้น | Zones: ราชบุรี, สมุทรสาคร, สุราษฎานี, หาดใหญ่, ภูเก็ต</footer>
-
-<script>
-/* =======================
-   Data model in localStorage
-   keys:
-     hub_config: {public_entry: true, site_password: '...', siteTitle, siteDesc}
-     hub_tiles: [ {id, title, desc, iconBase64, url, order} ]
-     hub_posts: [ {id, type, zone, name, content, imageBase64, status, createdAt, reactions: {👍🏻:[],👏🏻:[],...}} ]
-     hub_admins: [ {user, passHash} ]  // for demo store simple password plaintext (NOT SECURE)
-     hub_currentAdmin: {user, remember} // when logged in
-     hub_userId: uuid per browser to limit reactions
-   NOTE: This is demo only.
-   ======================= */
-
-const DEFAULTS = {
-  config: { public_entry: true, site_password: 'hubdemo', siteTitle:'Link Hub — ชื่อเพจ', siteDesc:'รวมลิงก์สำคัญ และพื้นที่โพสต์สำหรับโซนต่าง ๆ' },
-  zones: ['ราชบุรี','สมุทรสาคร','สุราษฎานี','หาดใหญ่','ภูเก็ต'],
-  reactionTypes: ['👍🏻','👏🏻','🙏','✌🏻','❤️','🔥','✅','💰']
-};
-
-function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
-function load(key, fallback){ try{ const v=localStorage.getItem(key); return v? JSON.parse(v): fallback }catch(e){return fallback}}
-function save(key, val){ localStorage.setItem(key, JSON.stringify(val))}
-
-// Initialize on first run
-if(!load('hub_config')) save('hub_config', DEFAULTS.config)
-if(!load('hub_tiles')) save('hub_tiles', [
-  {id:uid('t'), title:'เว็บหลัก', desc:'เว็บไซต์บริษัท', iconBase64:'', url:'https://example.com', order:1},
-  {id:uid('t'), title:'Contact', desc:'ติดต่อเรา', iconBase64:'', url:'mailto:contact@example.com', order:2}
-])
-if(!load('hub_posts')) save('hub_posts', [])
-if(!load('hub_admins')) save('hub_admins', [{user:'admin@example.com', pass:'admin123', role:'super'}])
-if(!localStorage.getItem('hub_userId')) localStorage.setItem('hub_userId', uid('u'))
-
-/* ====== Helpers & UI glue ====== */
-
-const app = document.getElementById('app')
-const landingHeader = document.getElementById('landingHeader')
-const enterBtn = document.getElementById('enterBtn')
-const entryModal = document.getElementById('entryModal')
-const btnEntryOk = document.getElementById('btnEntryOk')
-const btnEntryCancel = document.getElementById('btnEntryCancel')
-const entryPassword = document.getElementById('entryPassword')
-const entryMsg = document.getElementById('entryMsg')
-const adminShortcut = document.getElementById('adminShortcut')
-const adminLoginModal = document.getElementById('adminLoginModal')
-const btnAdminLogin = document.getElementById('btnAdminLogin')
-const btnAdminLoginCancel = document.getElementById('btnAdminLoginCancel')
-const adminUser = document.getElementById('adminUser')
-const adminPass = document.getElementById('adminPass')
-const adminRemember = document.getElementById('adminRemember')
-const adminLoginMsg = document.getElementById('adminLoginMsg')
-const hubView = document.getElementById('hubView')
-const adminView = document.getElementById('adminView')
-const adminContent = document.getElementById('adminContent')
-const navAdminLinks = document.getElementById('navAdminLinks')
-const userInfo = document.getElementById('userInfo')
-const logoutBtn = document.getElementById('logoutBtn')
-const goLanding = document.getElementById('goLanding')
-const hubName = document.getElementById('hubName')
-const hubShort = document.getElementById('hubShort')
-const tilesWrap = document.getElementById('tilesWrap')
-const btnAddTile = document.getElementById('btnAddTile')
-const feedList = document.getElementById('feedList')
-const postType = document.getElementById('postType')
-const postZone = document.getElementById('postZone')
-const postName = document.getElementById('postName')
-const postContent = document.getElementById('postContent')
-const postImage = document.getElementById('postImage')
-const postImagePreview = document.getElementById('postImagePreview')
-const humanCheck = document.getElementById('humanCheck')
-const btnPost = document.getElementById('btnPost')
-const quickStats = document.getElementById('quickStats')
-const pinnedLinks = document.getElementById('pinnedLinks')
-const postComposer = document.getElementById('postComposer')
-const siteTitleEl = document.getElementById('siteTitle')
-const siteDescEl = document.getElementById('siteDesc')
-const hubAvatar = document.getElementById('hubAvatar')
-
-let config = load('hub_config')
-let tiles = load('hub_tiles')
-let posts = load('hub_posts')
-let admins = load('hub_admins')
-let currentAdmin = load('hub_currentAdmin') || null
-const userId = localStorage.getItem('hub_userId')
-const reactionTypes = DEFAULTS.reactionTypes
-
-// Render initial
-siteTitleEl.textContent = config.siteTitle
-siteDescEl.textContent = config.siteDesc
-hubName.textContent = config.siteTitle
-hubShort.textContent = config.siteDesc
-hubAvatar.textContent = config.siteTitle.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()
-
-// Entry logic
-enterBtn.addEventListener('click', () => {
-  config = load('hub_config')
-  if(config.public_entry) openHub()
-  else {
-    entryPassword.value=''
-    entryMsg.textContent=''
-    entryModal.classList.remove('hidden')
-  }
-})
-
-btnEntryOk.addEventListener('click', ()=>{
-  const v = entryPassword.value.trim()
-  if(!v){ entryMsg.textContent='กรุณาใส่รหัส' ; return }
-  config = load('hub_config')
-  if(v === config.site_password){ entryModal.classList.add('hidden'); openHub(); }
-  else { entryMsg.textContent='รหัสไม่ถูกต้อง' }
-})
-btnEntryCancel.addEventListener('click', ()=> entryModal.classList.add('hidden'))
-
-// Admin shortcut (visible if admin session present)
-function updateAdminShortcut(){
-  currentAdmin = load('hub_currentAdmin')
-  if(currentAdmin && currentAdmin.user){
-    adminShortcut.classList.remove('hidden')
-    navAdminLinks.classList.remove('hidden')
-    logoutBtn.classList.remove('hidden')
-    userInfo.innerHTML = `<span class="small-muted">Admin: ${currentAdmin.user}</span>`
-    adminShortcut.onclick = () => openAdmin('dashboard')
-  } else {
-    adminShortcut.classList.add('hidden')
-    navAdminLinks.classList.add('hidden')
-    logoutBtn.classList.add('hidden')
-    userInfo.textContent = ''
-  }
-}
-updateAdminShortcut()
-
-// Admin login modal flow
-adminShortcut.addEventListener('click', ()=> {
-  if(load('hub_currentAdmin')) openAdmin('dashboard')
-  else {
-    adminLoginModal.classList.remove('hidden')
-    adminLoginMsg.textContent=''
-    adminUser.value=''; adminPass.value=''; adminRemember.checked=false
-  }
-})
-btnAdminLoginCancel.addEventListener('click', ()=> adminLoginModal.classList.add('hidden'))
-
-btnAdminLogin.addEventListener('click', ()=> {
-  const u = adminUser.value.trim(), p = adminPass.value
-  if(!u||!p){ adminLoginMsg.textContent='ระบุ user & password'; return }
-  admins = load('hub_admins')
-  const found = admins.find(a=>a.user===u && a.pass===p)
-  if(found){
-    save('hub_currentAdmin', {user:u, remember: adminRemember.checked, role: found.role || 'moderator'})
-    adminLoginMsg.textContent='login success'
-    adminLoginModal.classList.add('hidden')
-    updateAdminShortcut()
-    openAdmin('dashboard')
-  } else { adminLoginMsg.textContent='invalid credentials' }
-})
-
-// Logout
-document.getElementById('adminLogout').addEventListener('click', ()=> {
-  localStorage.removeItem('hub_currentAdmin')
-  updateAdminShortcut()
-  adminView.classList.add('hidden')
-  hubView.classList.remove('hidden')
-})
-logoutBtn.addEventListener('click', ()=> {
-  localStorage.removeItem('hub_currentAdmin')
-  updateAdminShortcut()
-  alert('Admin logged out on this device')
-})
-
-// Go back to landing
-goLanding.addEventListener('click', ()=> {
-  app.style.display='none'
-  landingHeader.style.display='block'
-})
-
-// Open hub
-function openHub(){
-  landingHeader.style.display='none'
-  app.style.display='block'
-  renderTiles()
-  renderFeed()
-  renderQuickStats()
-  renderPinned()
-  updateAdminShortcut()
-  // show admin nav if admin logged in
-  if(load('hub_currentAdmin')) {
-    document.getElementById('hubActions').innerHTML = '<button onclick="openAdmin(\'dashboard\')">Admin panel</button>'
-  } else document.getElementById('hubActions').innerHTML = ''
-}
-
-// Tiles UI
-function renderTiles(){
-  tiles = load('hub_tiles')
-  tilesWrap.innerHTML = ''
-  tiles.sort((a,b)=> (a.order||0)-(b.order||0))
-  tiles.forEach(t=>{
-    const div = document.createElement('div'); div.className='tile card'
-    const img = document.createElement('img'); img.src = t.iconBase64 || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="#eef"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#889" font-size="14">${(t.title||'')}</text></svg>`)
-    const meta = document.createElement('div'); meta.className='meta'
-    meta.innerHTML = `<strong>${t.title}</strong><small>${t.desc||''}</small>`
-    const actions = document.createElement('div')
-    actions.style.marginLeft='8px'
-    if(load('hub_currentAdmin')) {
-      const edit = document.createElement('button'); edit.textContent='Edit'; edit.style.background='#666'; edit.onclick = ()=> openTileEditor(t.id)
-      const del = document.createElement('button'); del.textContent='Del'; del.style.background='#c33'; del.onclick = ()=> { if(confirm('Delete?')){ tiles = tiles.filter(x=>x.id!==t.id); save('hub_tiles',tiles); renderTiles(); } }
-      actions.appendChild(edit); actions.appendChild(del)
-    }
-    div.appendChild(img); div.appendChild(meta); div.appendChild(actions)
-    div.onclick = (e)=> {
-      // open link only if clicked tile area, not admin buttons
-      if(e.target.tagName.toLowerCase()==='button') return
-      window.open(t.url, '_blank')
-      // increment click stat
-      t.clicks = (t.clicks||0)+1; save('hub_tiles', tiles)
-      renderQuickStats()
-    }
-    tilesWrap.appendChild(div)
-  })
-  btnAddTile.classList.toggle('hidden', !load('hub_currentAdmin'))
-}
-
-// Tile editor (simple prompt-based)
-function openTileEditor(id=null){
-  const isNew = !id
-  const t = isNew ? {id:uid('t'), title:'', desc:'', url:'', iconBase64:'', order: (tiles.length+1)} : tiles.find(x=>x.id===id)
-  // build a small modal-like UI (quick)
-  const wrap = document.createElement('div'); wrap.className='card'
-  wrap.style.position='fixed'; wrap.style.left='50%'; wrap.style.top='50%'; wrap.style.transform='translate(-50%,-50%)'; wrap.style.zIndex=9999; wrap.style.width='420px'
-  wrap.innerHTML = `
-    <h3>${isNew?'Create Tile':'Edit Tile'}</h3>
-    <label class="block">Title</label><input id="t_title" type="text" value="${t.title||''}">
-    <label class="block">Desc (optional)</label><input id="t_desc" type="text" value="${t.desc||''}">
-    <label class="block">URL</label><input id="t_url" type="text" value="${t.url||''}">
-    <label class="block">Icon (image)</label><input id="t_icon" type="file" accept="image/*">
-    <div style="display:flex; gap:8px; margin-top:8px"><button id="t_save">Save</button><button id="t_cancel">Cancel</button></div>
-  `
-  document.body.appendChild(wrap)
-  const inpIcon = wrap.querySelector('#t_icon'), t_title = wrap.querySelector('#t_title'), t_desc = wrap.querySelector('#t_desc'), t_url = wrap.querySelector('#t_url')
-  inpIcon.addEventListener('change', e=>{
-    const f = e.target.files[0]; if(!f) return
-    const r = new FileReader(); r.onload = ()=> t.iconBase64 = r.result; r.readAsDataURL(f)
-  })
-  wrap.querySelector('#t_cancel').onclick = ()=> document.body.removeChild(wrap)
-  wrap.querySelector('#t_save').onclick = ()=>{
-    t.title = t_title.value.trim()||'Untitled'
-    t.desc = t_desc.value.trim()
-    t.url = t_url.value.trim()||'#'
-    if(isNew) tiles.push(t); save('hub_tiles', tiles); renderTiles(); document.body.removeChild(wrap)
-  }
-}
-
-// Post composer
-let lastPostTs = 0
-postImage.addEventListener('change', e=>{
-  const f = e.target.files[0]; if(!f) { postImagePreview.classList.add('hidden'); return }
-  const r = new FileReader(); r.onload = ()=> { postImagePreview.src = r.result; postImagePreview.classList.remove('hidden'); postImagePreview.dataset.src = r.result; }
-  r.readAsDataURL(f)
-})
-btnPost.addEventListener('click', ()=>{
-  // basic validation + rate limit + captcha
-  const type = postType.value, zone = postZone.value, name = postName.value.trim(), content = postContent.value.trim()
-  if(!type||!zone||!name||!content){ alert('กรอกฟิลด์ที่จำเป็นให้ครบ'); return }
-  if(!humanCheck.checked){ alert('ยืนยันว่าคุณไม่ใช่บอท'); return }
-  const now = Date.now()
-  if(now - lastPostTs < 30*1000){ alert('Rate limit: โปรดรอ 30 วินาทีก่อนโพสต์ครั้งต่อไป'); return }
-  lastPostTs = now
-  const img = postImagePreview.dataset.src || ''
-  const p = { id: uid('p'), type, zone, name, content, imageBase64: img, status: (load('hub_config').auto_publish? 'published' : 'pending'), createdAt: now, reactions: {} }
-  reactionTypes.forEach(r=> p.reactions[r]=[])
-  posts = load('hub_posts')
-  posts.unshift(p)
-  save('hub_posts', posts)
-  // reset
-  postName.value=''; postContent.value=''; postImage.value=''; postImagePreview.classList.add('hidden'); humanCheck.checked=false
-  renderFeed()
-  renderQuickStats()
-  alert('โพสต์ถูกส่งเรียบร้อย' + (p.status==='pending'?' (รออนุมัติ)':''))
-})
-
-// Render feed
-function renderFeed(){
-  posts = load('hub_posts')
-  feedList.innerHTML = ''
-  posts.forEach(post=>{
-    if(post.status === 'removed') return
-    // visitors see only published
-    if(!isAdmin() && post.status !== 'published') return
-    const box = document.createElement('div'); box.className='post card'
-    const header = document.createElement('div'); header.className='post-header'
-    header.innerHTML = `<div style="width:44px;height:44px;border-radius:50%;background:#eef;display:flex;align-items:center;justify-content:center">${post.name[0]||'U'}</div>
-      <div style="flex:1"><strong>${post.name}</strong> <div class="small-muted zone-tag">${post.type} • ${post.zone}</div></div>
-      <div class="small-muted">${new Date(post.createdAt).toLocaleString()}</div>`
-    const body = document.createElement('div'); body.className='post-body'
-    body.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(post.content)}</div>`
-    if(post.imageBase64){ const im = document.createElement('img'); im.src = post.imageBase64; im.className='image-preview'; body.appendChild(im) }
-    // reactions
-    const reCont = document.createElement('div'); reCont.className='reactions'
-    reactionTypes.forEach(r=>{
-      const btn = document.createElement('button'); btn.className='reaction-btn'; btn.textContent = r + ' ' + (post.reactions[r]?.length||0)
-      btn.onclick = ()=> toggleReaction(post.id, r)
-      reCont.appendChild(btn)
-    })
-    // admin actions
-    const adminActions = document.createElement('div'); adminActions.style.marginTop='8px'
-    if(isAdmin()){
-      const approve = document.createElement('button'); approve.textContent = post.status==='published'?'Hide':'Publish'; approve.style.background='#0a8'; approve.onclick = ()=> { post.status = post.status==='published'?'hidden':'published'; saveStatus(post.id, post.status); renderFeed(); }
-      const edit = document.createElement('button'); edit.textContent='Edit'; edit.style.background='#666'; edit.onclick = ()=> openPostEditor(post.id)
-      const del = document.createElement('button'); del.textContent='Remove'; del.style.background='#c33'; del.onclick = ()=> { if(confirm('Remove permanently?')){ setPostStatus(post.id,'removed'); renderFeed(); } }
-      adminActions.appendChild(approve); adminActions.appendChild(edit); adminActions.appendChild(del)
-      // show status
-      const st = document.createElement('div'); st.className='small-muted'; st.textContent = 'Status: ' + post.status; adminActions.appendChild(st)
-    }
-    box.appendChild(header); box.appendChild(body); box.appendChild(reCont); box.appendChild(adminActions)
-    feedList.appendChild(box)
-  })
-}
-
-// Reaction logic: each user can react once per reaction type; allow multiple different reactions
-function toggleReaction(postId, reaction){
-  posts = load('hub_posts')
-  const p = posts.find(x=>x.id===postId); if(!p) return
-  const list = p.reactions[reaction] || []
-  const idx = list.indexOf(userId)
-  if(idx===-1) list.push(userId) // add
-  else list.splice(idx,1) // remove
-  p.reactions[reaction]=list
-  save('hub_posts', posts)
-  renderFeed()
-  renderQuickStats()
-}
-
-// Admin helpers
-function isAdmin(){ return !!load('hub_currentAdmin') }
-window.openAdmin = function(route='dashboard'){
-  // show admin view
-  hubView.classList.add('hidden')
-  adminView.classList.remove('hidden')
-  adminContent.innerHTML = ''
-  renderAdminRoute(route)
-}
-
-function renderAdminRoute(route){
-  adminContent.innerHTML = ''
-  if(route==='dashboard') {
-    adminContent.innerHTML = '<h3>Admin Dashboard</h3><div id="dashStats"></div><div style="margin-top:12px"><button id="quickMenus">Manage Menus</button> <button id="quickPosts">Moderate Posts</button></div>'
-    document.getElementById('quickMenus').onclick = ()=> renderAdminRoute('menus')
-    document.getElementById('quickPosts').onclick = ()=> renderAdminRoute('posts')
-    const ds = document.getElementById('dashStats'); ds.innerHTML = ''
-    const postsData = load('hub_posts') || []
-    const total = postsData.length
-    const pending = postsData.filter(p=>p.status==='pending').length
-    const published = postsData.filter(p=>p.status==='published').length
-    const hidden = postsData.filter(p=>p.status==='hidden').length
-    ds.innerHTML = `<div class="list"><div>Total posts: ${total}</div><div>Published: ${published}</div><div>Pending: ${pending}</div><div>Hidden: ${hidden}</div></div>`
-    return
-  }
-  if(route==='menus'){
-    adminContent.innerHTML = '<h3>Manage Tiles / Menus</h3><div id="menusList"></div><div style="margin-top:8px"><button id="createTile">Create Tile</button></div>'
-    const ml = document.getElementById('menusList'); ml.innerHTML=''
-    tiles = load('hub_tiles')
-    tiles.forEach(t=>{
-      const r = document.createElement('div'); r.className='card'; r.style.display='flex'; r.style.justifyContent='space-between'; r.style.alignItems='center'; r.style.marginTop='8px'
-      r.innerHTML = `<div><strong>${t.title}</strong><div class="small-muted">${t.url}</div></div>`
-      const controls = document.createElement('div')
-      const up = document.createElement('button'); up.textContent='Up'; up.onclick = ()=> { t.order = (t.order||0)-1; save('hub_tiles', tiles); renderAdminRoute('menus'); renderTiles(); }
-      const down = document.createElement('button'); down.textContent='Down'; down.onclick = ()=> { t.order = (t.order||0)+1; save('hub_tiles', tiles); renderAdminRoute('menus'); renderTiles(); }
-      const edit = document.createElement('button'); edit.textContent='Edit'; edit.onclick = ()=> openTileEditor(t.id)
-      const del = document.createElement('button'); del.textContent='Delete'; del.onclick = ()=> { if(confirm('Delete?')){ tiles = tiles.filter(x=>x.id!==t.id); save('hub_tiles', tiles); renderAdminRoute('menus'); renderTiles(); } }
-      controls.appendChild(up); controls.appendChild(down); controls.appendChild(edit); controls.appendChild(del)
-      r.appendChild(controls); ml.appendChild(r)
-    })
-    document.getElementById('createTile').onclick = ()=> openTileEditor(null)
-    return
-  }
-  if(route==='posts'){
-    posts = load('hub_posts') || []
-    adminContent.innerHTML = '<h3>Moderation Queue</h3><div id="modList"></div>'
-    const ml = document.getElementById('modList')
-    posts.forEach(p=>{
-      const r = document.createElement('div'); r.className='card'; r.style.marginTop='8px'
-      r.innerHTML = `<div><strong>${p.name}</strong> <span class="small-muted">[${p.type} • ${p.zone}]</span><div class="small-muted">${new Date(p.createdAt).toLocaleString()}</div><div style="margin-top:8px">${escapeHtml(p.content)}</div></div>`
-      const controls = document.createElement('div'); controls.style.marginTop='8px'
-      const approve = document.createElement('button'); approve.textContent='Publish'; approve.onclick = ()=>{ setPostStatus(p.id,'published'); renderAdminRoute('posts'); renderFeed(); renderQuickStats(); }
-      const hide = document.createElement('button'); hide.textContent='Hide'; hide.onclick = ()=>{ setPostStatus(p.id,'hidden'); renderAdminRoute('posts'); renderFeed(); }
-      const edit = document.createElement('button'); edit.textContent='Edit'; edit.onclick = ()=> openPostEditor(p.id)
-      const remove = document.createElement('button'); remove.textContent='Remove'; remove.onclick = ()=>{ if(confirm('Remove permanently?')){ setPostStatus(p.id,'removed'); renderAdminRoute('posts'); renderFeed(); } }
-      controls.appendChild(approve); controls.appendChild(hide); controls.appendChild(edit); controls.appendChild(remove)
-      r.appendChild(controls)
-      ml.appendChild(r)
-    })
-    return
-  }
-  if(route==='settings'){
-    adminContent.innerHTML = `<h3>Settings</h3>
-      <label class="block">Site Title</label><input id="s_title" value="${config.siteTitle}">
-      <label class="block">Site Description</label><input id="s_desc" value="${config.siteDesc}">
-      <label class="block">Access Mode</label>
-      <label><input id="s_public" type="checkbox"> Public entry (if unchecked → protected)</label>
-      <label class="block">Site-wide password (for Protected)</label><input id="s_password" type="text" value="${config.site_password}">
-      <label style="margin-top:8px"><input id="s_auto_pub" type="checkbox"> Auto-publish posts (no moderation)</label>
-      <div style="margin-top:12px"><button id="s_save">Save Settings</button></div>`
-    document.getElementById('s_public').checked = config.public_entry
-    document.getElementById('s_auto_pub').checked = config.auto_publish || false
-    document.getElementById('s_save').onclick = ()=>{
-      config.siteTitle = document.getElementById('s_title').value
-      config.siteDesc = document.getElementById('s_desc').value
-      config.public_entry = document.getElementById('s_public').checked
-      config.site_password = document.getElementById('s_password').value || config.site_password
-      config.auto_publish = document.getElementById('s_auto_pub').checked
-      save('hub_config', config)
-      siteTitleEl.textContent = config.siteTitle; siteDescEl.textContent = config.siteDesc; hubName.textContent = config.siteTitle; hubShort.textContent = config.siteDesc
-      alert('Saved settings')
-    }
-    return
-  }
-  if(route==='media'){
-    adminContent.innerHTML = `<h3>Media</h3><div class="small-muted">Upload cover/avatar images (saved to localStorage)</div>
-      <label class="block">Upload Cover (preview only)</label><input id="m_cover" type="file" accept="image/*">
-      <label class="block">Upload Avatar</label><input id="m_avatar" type="file" accept="image/*">
-      <div style="margin-top:8px"><button id="m_save">Apply</button></div>`
-    document.getElementById('m_save').onclick = ()=>{
-      const c = document.getElementById('m_cover').files[0], a = document.getElementById('m_avatar').files[0]
-      if(c){
-        const r = new FileReader(); r.onload = ()=> { config.cover = r.result; save('hub_config', config); landingHeader.style.backgroundImage = `url(${r.result})`; alert('Cover applied') }; r.readAsDataURL(c)
-      }
-      if(a){
-        const r2 = new FileReader(); r2.onload = ()=> { config.avatar = r2.result; save('hub_config', config); hubAvatar.style.backgroundImage = `url(${r2.result})`; hubAvatar.textContent=''; alert('Avatar applied') }; r2.readAsDataURL(a)
+      if (remainingNet > 0) {
+        const taxableAmount = Math.min(remainingNet, range === Infinity ? remainingNet : range);
+        const taxOnThisBracket = taxableAmount * current.rate;
+        taxPayable += taxOnThisBracket;
+        if (taxableAmount > 0) highestBracket = current.rate * 100;
+        
+        taxDetails.push({
+          bracket: i + 1,
+          range: `ไม่เกิน ${current.limit === Infinity ? '∞' : current.limit.toLocaleString()} บาท`,
+          taxableAmount: taxableAmount,
+          rate: current.rate * 100,
+          taxAmount: taxOnThisBracket
+        });
+        
+        remainingNet -= taxableAmount;
       }
     }
-    return
+    return { taxPayable, highestBracket, taxDetails };
+  };
+
+  /***** CircularProgress & Modal *****/
+  const CircularProgress = ({ percentage, color, label, subLabel }) => {
+    const radius = 35;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+      React.createElement('div', { className: "flex flex-col items-center" },
+        React.createElement('div', { className: "relative w-24 h-24" },
+          React.createElement('svg', { viewBox: "0 0 96 96", className: "transform -rotate-90 w-24 h-24" },
+            React.createElement('circle', { className: "text-gray-200", strokeWidth: "8", stroke: "currentColor", fill: "transparent", r: radius, cx: "48", cy: "48" }),
+            React.createElement('circle', { className: `${color} transition-all duration-1000 ease-out`, strokeWidth: "8", strokeDasharray: circumference, strokeDashoffset, strokeLinecap: "round", stroke: "currentColor", fill: "transparent", r: radius, cx: "48", cy: "48" })
+          ),
+          React.createElement('div', { className: "absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center text-gray-700" },
+            React.createElement('span', { className: "text-xl font-bold" }, Math.min(percentage, 100).toFixed(0) + '%')
+          )
+        ),
+        React.createElement('span', { className: "mt-2 text-sm font-medium text-gray-700" }, label),
+        React.createElement('span', { className: "text-xs text-gray-500" }, subLabel)
+      )
+    );
+  };
+
+  const Modal = ({ isOpen, onClose, title, content }) => {
+    if (!isOpen) return null;
+    return (
+      React.createElement('div', { className: "fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" },
+        React.createElement('div', { className: "bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden" },
+          React.createElement('div', { className: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50" },
+            React.createElement('h3', { className: "font-semibold text-gray-800 flex items-center gap-2" },
+              React.createElement(Lightbulb, { className: "w-5 h-5 text-yellow-500" }),
+              title
+            ),
+            React.createElement('button', { onClick: onClose, className: "text-gray-400 hover:text-gray-600" }, React.createElement(X, { size: 20 }))
+          ),
+          React.createElement('div', { className: "p-6 text-gray-600 text-sm leading-relaxed whitespace-pre-line" }, content)
+        )
+      )
+    );
+  };
+
+  /***** Bar Chart Component แบบเปอร์เซ็นต์ *****/
+  function BarChartComparison({ totalIncome, taxBefore, taxAfter, assessableIncome }) {
+    const [hoverInfo, setHoverInfo] = useState({ text: '', x: 0, y: 0, visible: false });
+    const chartRef = useRef(null);
+    
+    // คำนวณเป็นเปอร์เซ็นต์ของรายได้
+    const assessablePercent = 100; // รายได้พึงประเมินเป็น 100%
+    const taxBeforePercent = assessableIncome > 0 ? (taxBefore / assessableIncome) * 100 : 0;
+    const totalIncomePercent = 100; // รายได้รวมเป็น 100%
+    const taxAfterPercent = totalIncome > 0 ? (taxAfter / totalIncome) * 100 : 0;
+    
+    const chart1Data = [
+      { name: 'รายได้พึงประเมิน', value: 100, color: '#3b82f6', actualValue: assessableIncome },
+      { name: 'ภาษีก่อนทำประกัน', value: taxBeforePercent, color: '#ef4444', actualValue: taxBefore }
+    ];
+    
+    const chart2Data = [
+      { name: 'รายได้รวม', value: 100, color: '#10b981', actualValue: totalIncome },
+      { name: 'ภาษีหลังทำประกัน', value: taxAfterPercent, color: '#f59e0b', actualValue: taxAfter }
+    ];
+    
+    const maxHeight = 200;
+    
+    const handleMouseEnter = (e, text) => {
+      const rect = chartRef.current?.getBoundingClientRect();
+      const x = e.clientX - (rect?.left || 0);
+      const y = e.clientY - (rect?.top || 0);
+      setHoverInfo({ text, x, y, visible: true });
+    };
+    
+    const handleMouseLeave = () => {
+      setHoverInfo({ text: '', x: 0, y: 0, visible: false });
+    };
+    
+    return (
+      React.createElement('div', { className: "bar-chart-container" },
+        React.createElement('div', { className: "bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6" },
+          React.createElement('div', { className: "flex flex-col md:flex-row md:items-center justify-between mb-6" },
+            React.createElement('div', null,
+              React.createElement('h3', { className: "text-xl font-bold text-gray-800 flex items-center gap-2" },
+                React.createElement(BarChart3, { className: "w-6 h-6 text-blue-600" }),
+                "กราฟแท่งเปรียบเทียบภาษีก่อน/หลัง"
+              ),
+              React.createElement('p', { className: "text-sm text-gray-600 mt-1" }, "แสดงการเปรียบเทียบรายได้และภาษี (แสดงเป็นเปอร์เซ็นต์ของรายได้)")
+            ),
+            React.createElement('div', { className: "text-right mt-2 md:mt-0" },
+              React.createElement('div', { className: "text-sm text-gray-500" }, "หน่วย: เปอร์เซ็นต์ (%)")
+            )
+          ),
+          
+          React.createElement('div', { ref: chartRef, className: "relative" },
+            hoverInfo.visible && React.createElement('div', {
+              className: "tooltip",
+              style: { left: hoverInfo.x + 'px', top: hoverInfo.y + 'px', opacity: hoverInfo.visible ? 1 : 0 }
+            }, hoverInfo.text),
+            
+            // กราฟชุดที่ 1
+            React.createElement('div', { className: "mb-10" },
+              React.createElement('h4', { className: "text-lg font-semibold text-gray-700 mb-4" }, "ชุดที่ 1: เปรียบเทียบ รายได้พึงประเมิน กับ ภาษีก่อนทำประกัน"),
+              React.createElement('div', { className: "overflow-x-auto" },
+                React.createElement('div', { className: "flex items-end space-x-4 md:space-x-8 h-56 pl-8 md:pl-12 border-l border-b border-gray-200", style: { minWidth: '300px' } },
+                  chart1Data.map((item, index) => {
+                    const height = (item.value / 100) * maxHeight;
+                    const formattedValue = item.value.toFixed(1) + '%';
+                    const actualValueFormatted = item.actualValue.toLocaleString() + ' บาท';
+                    
+                    return React.createElement('div', { key: index, className: "flex flex-col items-center flex-1" },
+                      React.createElement('div', { className: "flex flex-col items-center w-full" },
+                        React.createElement('div', 
+                          { 
+                            className: "chart-bar rounded-t-lg w-12 md:w-16 cursor-pointer relative",
+                            style: { height: `${height}px`, backgroundColor: item.color },
+                            onMouseEnter: (e) => handleMouseEnter(e, `${item.name}: ${formattedValue}\n${actualValueFormatted}`),
+                            onMouseLeave: handleMouseLeave
+                          },
+                          React.createElement('div', { className: "absolute -top-8 left-1/2 transform -translate-x-1/2 text-sm font-medium whitespace-nowrap" }, formattedValue)
+                        ),
+                        React.createElement('div', { className: "mt-2 text-center w-full" },
+                          React.createElement('div', { className: "font-medium text-gray-700 text-sm md:text-base" }, item.name),
+                          React.createElement('div', { className: "text-xs text-gray-500 mt-1" }, actualValueFormatted)
+                        )
+                      )
+                    );
+                  })
+                )
+              )
+            ),
+            
+            // กราฟชุดที่ 2
+            React.createElement('div', null,
+              React.createElement('h4', { className: "text-lg font-semibold text-gray-700 mb-4" }, "ชุดที่ 2: เปรียบเทียบ รายได้รวม กับ ภาษีหลังทำประกัน"),
+              React.createElement('div', { className: "overflow-x-auto" },
+                React.createElement('div', { className: "flex items-end space-x-4 md:space-x-8 h-56 pl-8 md:pl-12 border-l border-b border-gray-200", style: { minWidth: '300px' } },
+                  chart2Data.map((item, index) => {
+                    const height = (item.value / 100) * maxHeight;
+                    const formattedValue = item.value.toFixed(1) + '%';
+                    const actualValueFormatted = item.actualValue.toLocaleString() + ' บาท';
+                    
+                    return React.createElement('div', { key: index, className: "flex flex-col items-center flex-1" },
+                      React.createElement('div', { className: "flex flex-col items-center w-full" },
+                        React.createElement('div', 
+                          { 
+                            className: "chart-bar rounded-t-lg w-12 md:w-16 cursor-pointer relative",
+                            style: { height: `${height}px`, backgroundColor: item.color },
+                            onMouseEnter: (e) => handleMouseEnter(e, `${item.name}: ${formattedValue}\n${actualValueFormatted}`),
+                            onMouseLeave: handleMouseLeave
+                          },
+                          React.createElement('div', { className: "absolute -top-8 left-1/2 transform -translate-x-1/2 text-sm font-medium whitespace-nowrap" }, formattedValue)
+                        ),
+                        React.createElement('div', { className: "mt-2 text-center w-full" },
+                          React.createElement('div', { className: "font-medium text-gray-700 text-sm md:text-base" }, item.name),
+                          React.createElement('div', { className: "text-xs text-gray-500 mt-1" }, actualValueFormatted)
+                        )
+                      )
+                    );
+                  })
+                )
+              )
+            ),
+            
+            // Legend
+            React.createElement('div', { className: "mt-8 flex flex-wrap justify-center gap-4 md:gap-6" },
+              React.createElement('div', { className: "flex items-center" },
+                React.createElement('div', { className: "w-4 h-4 rounded mr-2", style: { backgroundColor: '#3b82f6' } }),
+                React.createElement('span', { className: "text-sm text-gray-700" }, "รายได้พึงประเมิน")
+              ),
+              React.createElement('div', { className: "flex items-center" },
+                React.createElement('div', { className: "w-4 h-4 rounded mr-2", style: { backgroundColor: '#ef4444' } }),
+                React.createElement('span', { className: "text-sm text-gray-700" }, "ภาษีก่อนทำประกัน")
+              ),
+              React.createElement('div', { className: "flex items-center" },
+                React.createElement('div', { className: "w-4 h-4 rounded mr-2", style: { backgroundColor: '#10b981' } }),
+                React.createElement('span', { className: "text-sm text-gray-700" }, "รายได้รวม")
+              ),
+              React.createElement('div', { className: "flex items-center" },
+                React.createElement('div', { className: "w-4 h-4 rounded mr-2", style: { backgroundColor: '#f59e0b' } }),
+                React.createElement('span', { className: "text-sm text-gray-700" }, "ภาษีหลังทำประกัน")
+              )
+            )
+          )
+        )
+      )
+    );
   }
-  adminContent.innerHTML = '<div>Route not found</div>'
-}
 
-// Post editor
-function openPostEditor(id){
-  const p = load('hub_posts').find(x=>x.id===id); if(!p) return
-  const wrap = document.createElement('div'); wrap.className='card'; wrap.style.position='fixed'; wrap.style.left='50%'; wrap.style.top='50%'; wrap.style.transform='translate(-50%,-50%)'; wrap.style.zIndex=9999; wrap.style.width='500px'
-  wrap.innerHTML = `<h3>Edit Post</h3>
-    <label class="block">Name</label><input id="ep_name" value="${p.name}">
-    <label class="block">Content</label><textarea id="ep_content">${escapeHtml(p.content)}</textarea>
-    <label class="block">Status</label><select id="ep_status"><option value="pending">pending</option><option value="published">published</option><option value="hidden">hidden</option></select>
-    <div style="margin-top:8px"><button id="ep_save">Save</button> <button id="ep_cancel">Cancel</button></div>`
-  document.body.appendChild(wrap)
-  document.getElementById('ep_status').value = p.status
-  wrap.querySelector('#ep_cancel').onclick = ()=> document.body.removeChild(wrap)
-  wrap.querySelector('#ep_save').onclick = ()=>{
-    p.name = document.getElementById('ep_name').value
-    p.content = document.getElementById('ep_content').value
-    p.status = document.getElementById('ep_status').value
-    const all = load('hub_posts').map(x=> x.id===p.id? p: x)
-    save('hub_posts', all)
-    document.body.removeChild(wrap)
-    renderFeed(); renderQuickStats(); renderAdminRoute('posts')
+  /***** Expense Details Card Component *****/
+  function ExpenseDetailsCard({ expenseDetails }) {
+    if (!expenseDetails || expenseDetails.length === 0) return null;
+    
+    return (
+      React.createElement('div', { className: "bg-white rounded-xl shadow-sm border border-gray-200 p-6" },
+        React.createElement('div', { className: "flex items-center gap-2 mb-4" },
+          React.createElement(FileText, { className: "w-5 h-5 text-blue-600" }),
+          React.createElement('h3', { className: "text-lg font-bold text-gray-800" }, "ค่าใช้จ่ายที่ถูกหักในแต่ละประเภท")
+        ),
+        React.createElement('div', { className: "space-y-3" },
+          expenseDetails.map((expense, index) => (
+            React.createElement('div', { key: index, className: "flex justify-between items-center p-3 bg-gray-50 rounded-lg" },
+              React.createElement('div', null,
+                React.createElement('div', { className: "font-medium text-gray-700" }, expense.name),
+                React.createElement('div', { className: "text-sm text-gray-500" }, 
+                  `อัตราหัก: ${(expense.expenseRate * 100).toFixed(0)}%`
+                )
+              ),
+              React.createElement('div', { className: "text-right" },
+                React.createElement('div', { className: "font-bold text-blue-700" }, 
+                  expense.expenseAmount.toLocaleString() + " บาท"
+                ),
+                React.createElement('div', { className: "text-xs text-gray-500" }, 
+                  `จากรายได้ ${expense.incomeAmount.toLocaleString()} บาท`
+                )
+              )
+            )
+          ))
+        )
+      )
+    );
   }
-}
 
-// Utilities
-function setPostStatus(id, status){
-  posts = load('hub_posts').map(p=> p.id===id? {...p, status}:p)
-  save('hub_posts', posts)
-}
-function saveStatus(id, status){
-  posts = load('hub_posts')
-  const p = posts.find(x=>x.id===id)
-  if(p){ p.status = status; save('hub_posts', posts) }
-  renderFeed()
-}
-function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') }
+  /***** AdvisorScriptNew *****/
+  const AdvisorScriptNew = ({ taxDetails, simTotals }) => {
+    const [selectedScript, setSelectedScript] = useState(null);
+    const { gaps, highestBracket, taxPayable } = taxDetails;
+    const taxSavingPotential = simTotals.taxSaved;
 
-// Stats
-function renderQuickStats(){
-  posts = load('hub_posts') || []
-  const total = posts.length
-  const published = posts.filter(p=>p.status==='published').length
-  const pending = posts.filter(p=>p.status==='pending').length
-  quickStats.innerHTML = `<div>Total posts: ${total}</div><div>Published: ${published}</div><div>Pending: ${pending}</div>`
-  // top tiles by clicks
-  tiles = load('hub_tiles') || []
-  pinnedLinks.innerHTML = ''
-  tiles.slice(0,4).forEach(t=>{
-    const a = document.createElement('a'); a.href=t.url; a.target='_blank'; a.textContent = t.title; a.className='small-muted'; a.style.display='block'; pinnedLinks.appendChild(a)
-  })
-}
+    const scriptOptions = [
+      {
+        id: 'savings',
+        icon: Coins,
+        title: '1. แนะนำประกันสะสมทรัพย์',
+        color: 'blue',
+        condition: gaps.lifeGap > 0,
+        content: React.createElement('div', { className: "space-y-4" },
+          React.createElement('h3', { className: "font-bold text-blue-800" }, "บทพูดแนะนำ: ประกันสะสมทรัพย์ (เน้นวินัยเก็บเงิน+ลดหย่อนภาษี)"),
+          React.createElement('p', { className: "text-gray-700" }, '"สำหรับลูกค้าที่ต้องการทั้งการออมและสิทธิ์ลดหย่อนภาษี แนะนำประกันสะสมทรัพย์ครับ — ได้ทั้งเงินออมและความคุ้มครอง"'),
+          React.createElement('div', { className: "bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500" },
+            React.createElement('strong', null, "เชื่อมโยงข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-blue-900" },
+              React.createElement('li', null, "สิทธิ์ประกันชีวิตทั่วไปเหลือ ", React.createElement('strong', null, gaps.lifeGap.toLocaleString() + " บาท")),
+              React.createElement('li', null, "ประโยชน์: ได้ทั้งสภาพคล่องระยะยาวและการลดหย่อนภาษีทันที")
+            )
+          ),
+          React.createElement('div', null,
+            React.createElement('strong', null, "แนวถามเพื่อเก็บข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-gray-700" },
+              React.createElement('li', null, "เป้าหมายการออมของคุณใน 5 ปีข้างหน้าเป็นอย่างไร?"),
+              React.createElement('li', null, "ยอมรับสภาพคล่องที่ผูกมัดได้หรือไม่ เพราะอาจต้องถือครบสัญญาเพื่อสิทธิ์เต็ม")
+            )
+          )
+        )
+      },
+      {
+        id: 'wholelife',
+        icon: Umbrella,
+        title: '2. แนะนำประกันตลอดชีพ',
+        color: 'indigo',
+        condition: gaps.lifeGap > 0,
+        content: React.createElement('div', { className: "space-y-4" },
+          React.createElement('h3', { className: "font-bold text-indigo-800" }, "บทพูดแนะนำ: ประกันตลอดชีพ (เน้นคุ้มครองสูง+มรดก)"),
+          React.createElement('p', { className: "text-gray-700" }, '"เหมาะกับลูกค้าที่ต้องการความคุ้มครองสูงและไม่ต้องการนำเงินก้อนมาเป็นมรดก — เบี้ยอาจถูกกว่าในบางกรณีเมื่อเทียบความคุ้มครอง"'),
+          React.createElement('div', { className: "bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500" },
+            React.createElement('strong', null, "เชื่อมโยงข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-indigo-900" },
+              React.createElement('li', null, "ใช้สิทธิ์เบี้ยประกันชีวิตที่เหลือ ", React.createElement('strong', null, gaps.lifeGap.toLocaleString() + " บาท"), " ได้เช่นกัน"),
+              React.createElement('li', null, "เหมาะเมื่อเป้าหมายคือการส่งมรดก/ความคุ้มครองระยะยาว")
+            )
+          ),
+          React.createElement('div', null,
+            React.createElement('strong', null, "แนวถามเพื่อเก็บข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-gray-700" },
+              React.createElement('li', null, "คุณมีแผนจะส่งมรดก/เงินก้อนให้ทายาทหรือไม่?"),
+              React.createElement('li', null, "ต้องการคุ้มครองชีวิตสูงแค่ไหน (เทียบเป็นเท่าของรายได้ประจำปี)?")
+            )
+          )
+        )
+      },
+      {
+        id: 'health',
+        icon: HeartPulse,
+        title: '3. แนะนำประกันสุขภาพ',
+        color: 'pink',
+        condition: true,
+        content: React.createElement('div', { className: "space-y-4" },
+          React.createElement('h3', { className: "font-bold text-pink-800" }, "บทพูดแนะนำ: ประกันสุขภาพ (เน้นป้องกันความเสี่ยงค่ารักษา)"),
+          React.createElement('p', { className: "text-gray-700" }, '"ค่าใช้จ่ายด้านการรักษาพยาบาลสูงขึ้นทุกปี การมีประกันสุขภาพที่ครอบคลุมจะช่วยลดความเสี่ยงทางการเงินได้มาก"'),
+          React.createElement('div', { className: "bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500" },
+            React.createElement('strong', null, "เชื่อมโยงข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-pink-900" },
+              React.createElement('li', null, "เบี้ยประกันสุขภาพนำมาหักรวมกับเบี้ยประกันชีวิตได้ (จำกัด 100,000 บาท)"),
+              React.createElement('li', null, "ถ้าคุณกังวลเรื่องค่ารักษา แผนนี้ช่วยลดภาระให้ครอบครัวได้ทันที")
+            )
+          ),
+          React.createElement('div', null,
+            React.createElement('strong', null, "แนวถามเพื่อเก็บข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-gray-700" },
+              React.createElement('li', null, "โรงพยาบาลที่คุณใช้ประจำคือที่ไหน? ต้องการวงเงินค่าห้องเท่าไร?"),
+              React.createElement('li', null, "มีเงื่อนไขโรคประจำตัวหรือไม่ (เพื่อให้แนะนำแผนที่เหมาะสม)")
+            )
+          )
+        )
+      },
+      {
+        id: 'pension',
+        icon: TrendingUp,
+        title: '4. แนะนำประกันบำนาญ',
+        color: 'purple',
+        condition: gaps.pensionGap > 0,
+        content: React.createElement('div', { className: "space-y-4" },
+          React.createElement('h3', { className: "font-bold text-purple-800" }, "บทพูดแนะนำ: ประกันบำนาญ (เน้นวางแผนเกษียณ+ลดหย่อนเพิ่ม)"),
+          React.createElement('p', { className: "text-gray-700" }, '"ถ้าคุณต้องการรายได้ยามเกษียณที่มั่นคงและต้องการลดหย่อนภาษีเพิ่มเติม ประกันบำนาญเป็นทางเลือกที่ดี ที่ให้ทั้งรายได้ในอนาคตและได้สิทธิ์ลดหย่อน' ),
+          React.createElement('div', { className: "bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500" },
+            React.createElement('strong', null, "เชื่อมโยงข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-purple-900" },
+              React.createElement('li', null, "สิทธิ์บำนาญที่ใช้ได้อีกประมาณ ", React.createElement('strong', null, gaps.pensionGap.toLocaleString() + " บาท")),
+              React.createElement('li', null, "สามารถช่วยลดภาระภาษีปีนี้และสร้างสภาพคล่องหลังเกษียณ")
+            )
+          ),
+          React.createElement('div', null,
+            React.createElement('strong', null, "แนวถามเพื่อเก็บข้อมูล:"),
+            React.createElement('ul', { className: "list-disc list-inside mt-2 text-sm text-gray-700" },
+              React.createElement('li', null, "แผนเกษียณที่ต้องการคือรายได้ต่อเดือนเท่าไรเมื่อเกษียณ?"),
+              React.createElement('li', null, "ยอมรับการล็อกเงินจนถึงอายุที่กำหนดหรือไม่?")
+            )
+          ),
+          taxSavingPotential > 0 && React.createElement('div', { className: "mt-2 p-3 rounded bg-green-50 border-l-4 border-green-400 text-sm text-green-900" },
+            React.createElement('strong', null, "ตัวอย่างผลลัพธ์: "), "หากเติมสิทธิ์บำนาญ คุณจะประหยัดภาษีได้ประมาณ ", React.createElement('strong', null, taxSavingPotential.toLocaleString() + " บาท")
+          )
+        )
+      }
+    ];
 
-// Initial open if public_entry true? nope wait for enter
-// Admin nav buttons
-document.querySelectorAll('.admin-route').forEach(b=> b.addEventListener('click', (e)=> renderAdminRoute(e.target.dataset.adminRoute)))
+    return (
+      React.createElement('div', { className: "space-y-6 animate-in fade-in duration-300" },
+        React.createElement('div', { className: "bg-white rounded-xl shadow-sm border border-gray-100 p-6" },
+          React.createElement('h2', { className: "text-xl font-bold text-gray-800 flex items-center gap-2 mb-4" },
+            React.createElement(BookOpen, { className: "w-6 h-6 text-blue-600" }),
+            "เลือกบทแนะนำผลิตภัณฑ์ (Advisor Script)"
+          ),
+          React.createElement('p', { className: "text-gray-600 mb-6" }, "เลือกประเภทผลิตภัณฑ์ที่เหมาะสมกับลูกค้า เพื่อดูบทพูดแนะนำ"),
+          React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+            scriptOptions.map((option) =>
+              React.createElement('button', {
+                key: option.id,
+                onClick: () => setSelectedScript(option.id),
+                className: `p-4 rounded-xl border-2 transition-all flex items-start gap-3 text-left relative overflow-hidden group ${selectedScript === option.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'}`
+              },
+                React.createElement('div', { className: `p-3 rounded-full bg-blue-100 text-blue-600 group-hover:scale-110 transition-transform` },
+                  React.createElement(option.icon, { size: 24 })
+                ),
+                React.createElement('div', null,
+                  React.createElement('h3', { className: "font-bold text-lg text-gray-800 group-hover:text-blue-700" }, option.title),
+                  option.condition ?
+                    React.createElement('span', { className: "text-xs text-green-600 flex items-center gap-1 mt-1" }, React.createElement(CheckCircle, { size: 12 }), " ยังมีช่องว่างสิทธิ์")
+                    :
+                    React.createElement('span', { className: "text-xs text-gray-400 flex items-center gap-1 mt-1" }, "อาจไม่มีความจำเป็นเร่งด่วน")
+                )
+              )
+            )
+          )
+        ),
+        selectedScript && React.createElement('div', { className: "bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden animate-in slide-in-from-bottom-2" },
+          React.createElement('div', { className: "p-6" },
+            scriptOptions.find(opt => opt.id === selectedScript)?.content
+          )
+        )
+      )
+    );
+  };
 
-// Small helpers
-document.getElementById('btnAddTile').addEventListener('click', ()=> openTileEditor(null))
+  /***** Main App *****/
+  function App() {
+    const [activeTab, setActiveTab] = useState('income');
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [modalData, setModalData] = useState({ isOpen: false, title: '', content: '' });
+    const [validationErrors, setValidationErrors] = useState({});
 
-// On load show landing
-landingHeader.style.display='block'
-app.style.display='none'
-updateAdminShortcut()
-renderQuickStats()
+    const [incomeMode, setIncomeMode] = useState('monthly'); // monthly, yearly
+    const [incomes, setIncomes] = useState([
+      { typeId: 1, amount: 30000, active: true, expenseRate: INCOME_TYPES[0].defaultRate },
+      { typeId: 2, amount: 0, active: false, expenseRate: INCOME_TYPES[1].defaultRate },
+      { typeId: 3, amount: 0, active: false, expenseRate: INCOME_TYPES[2].defaultRate },
+      ...INCOME_TYPES.slice(3).map(t => ({ typeId: t.id, amount: 0, active: false, expenseRate: t.defaultRate }))
+    ]);
 
-// simple helper to show admin login if URL has #admin
-if(location.hash === '#admin-login'){ adminLoginModal.classList.remove('hidden') }
-</script>
+    const initialDeductions = DEDUCTION_CATEGORIES.flatMap(cat => cat.items)
+      .reduce((acc, item) => ({ ...acc, [item.key]: 0 }), { socialSecurity: 9000 });
+
+    const [deductions, setDeductions] = useState(initialDeductions);
+    const [showMoreDeductions, setShowMoreDeductions] = useState(false);
+
+    const [simLife, setSimLife] = useState(0);
+    const [simPension, setSimPension] = useState(0);
+
+    // Validation function
+    const validateInput = (field, value) => {
+      const errors = { ...validationErrors };
+      
+      if (value < 0) {
+        errors[field] = 'ค่าต้องไม่เป็นจำนวนติดลบ';
+      } else if (isNaN(value)) {
+        errors[field] = 'ค่าต้องเป็นตัวเลข';
+      } else {
+        delete errors[field];
+      }
+      
+      setValidationErrors(errors);
+      return Object.keys(errors).length === 0;
+    };
+
+    const handleIncomeChange = (id, field, val) => {
+      let normalized = val;
+      if (field === 'amount' || field === 'expenseRate') {
+        normalized = (typeof val === 'string' && val.trim() === '') ? 0 : Number(val);
+        if (Number.isNaN(normalized)) normalized = 0;
+      }
+      
+      // Validate
+      if (field === 'amount' && normalized < 0) {
+        normalized = 0;
+      }
+      
+      const newIncomes = incomes.map(inc =>
+        inc.typeId === id ? { ...inc, [field]: normalized } : inc
+      );
+      setIncomes(newIncomes);
+    };
+
+    const handleDeductionChange = (key, value) => {
+      const numValue = Number(value) || 0;
+      
+      // Validate
+      if (numValue < 0) {
+        return;
+      }
+      
+      setDeductions({ ...deductions, [key]: numValue });
+    };
+
+    const toggleIncomeType = (id) => {
+      setIncomes(incomes.map(inc =>
+        inc.typeId === id ? { ...inc, active: !inc.active } : inc
+      ));
+    };
+
+    const calculateResults = useMemo(() => {
+      const multiplier = incomeMode === 'monthly' ? 12 : 1;
+
+      let totalIncome = 0;
+      let totalExpenses = 0;
+      let expenseDetails = [];
+
+      const activeIncomes = incomes.filter(i => i.active);
+
+      // คำนวณ 40(1) และ 40(2) (รวมกันหักได้ไม่เกิน 100,000 บาท)
+      const type1 = activeIncomes.find(i => i.typeId === 1);
+      const type2 = activeIncomes.find(i => i.typeId === 2);
+      const inc1Amount = (Number(type1?.amount) || 0) * multiplier;
+      const inc2Amount = (Number(type2?.amount) || 0) * multiplier;
+
+      if (type1) totalIncome += inc1Amount;
+      if (type2) totalIncome += inc2Amount;
+
+      // คำนวณรวมกันแล้วค่อยจำกัดที่ 100,000 บาท
+      const combinedIncome12 = inc1Amount + inc2Amount;
+      const exp12 = Math.min(combinedIncome12 * 0.5, 100000);
+      totalExpenses += exp12;
+      
+      // แบ่งสัดส่วนค่าใช้จ่ายตามรายได้
+      if (type1 && combinedIncome12 > 0) {
+        expenseDetails.push({
+          typeId: 1,
+          name: '40(1) เงินเดือน/โบนัส',
+          incomeAmount: inc1Amount,
+          expenseRate: 0.5,
+          expenseAmount: (inc1Amount / combinedIncome12) * exp12
+        });
+      }
+      
+      if (type2 && combinedIncome12 > 0) {
+        expenseDetails.push({
+          typeId: 2,
+          name: '40(2) รับทำงานให้',
+          incomeAmount: inc2Amount,
+          expenseRate: 0.5,
+          expenseAmount: (inc2Amount / combinedIncome12) * exp12
+        });
+      }
+
+      // คำนวณ 40(3) (หักได้ 50% ไม่เกิน 100,000 บาท)
+      const type3 = activeIncomes.find(i => i.typeId === 3);
+      if (type3) {
+        const inc3Amount = (Number(type3.amount) || 0) * multiplier;
+        totalIncome += inc3Amount;
+        const exp3 = Math.min(inc3Amount * 0.5, 100000);
+        totalExpenses += exp3;
+        expenseDetails.push({
+          typeId: 3,
+          name: '40(3) ค่าลิขสิทธิ์',
+          incomeAmount: inc3Amount,
+          expenseRate: 0.5,
+          expenseAmount: exp3
+        });
+      }
+
+      // คำนวณประเภทอื่นๆ (40(4) ถึง 40(8))
+      activeIncomes.filter(i => i.typeId > 3).forEach(inc => {
+        const amount = (Number(inc.amount) || 0) * multiplier;
+        totalIncome += amount;
+        const expenseAmount = amount * (Number(inc.expenseRate) || 0);
+        totalExpenses += expenseAmount;
+        
+        const typeInfo = INCOME_TYPES.find(t => t.id === inc.typeId);
+        expenseDetails.push({
+          typeId: inc.typeId,
+          name: typeInfo?.name || `ประเภท ${inc.typeId}`,
+          incomeAmount: amount,
+          expenseRate: inc.expenseRate,
+          expenseAmount: expenseAmount
+        });
+      });
+
+      // คำนวณค่าลดหย่อนส่วนบุคคล (มาตรา 47)
+      const personalDeduction = 60000; // ค่าลดหย่อนส่วนตัว 60,000 บาท
+      const childDeduction = Math.max(0, (deductions.child || 0)) * 30000; // ลูกคนละ 30,000 บาท
+      const parentDeduction = Math.max(0, (deductions.parent || 0)) * 30000; // พ่อ-แม่คนละ 30,000 บาท
+      const disabledSupporterDeduction = Math.max(0, (deductions.disabledSupporter || 0)) * 60000; // ผู้พิการคนละ 60,000 บาท
+      const childBirthDeduction = Math.min(Math.max(0, deductions.childBirth || 0), 60000); // คลอดบุตรสูงสุด 60,000 บาท
+
+      const familyDeduction = Math.max(0, (deductions.spouse || 0)) + childDeduction + parentDeduction;
+      const socialDeduction = Math.min(Math.max(0, deductions.socialSecurity || 0), 9000); // สังคมสงเคราะห์สูงสุด 9,000 บาท
+
+      const mortgageInterestDeduction = Math.min(Math.max(0, deductions.mortgageInterest || 0), 50000); // ดอกเบี้ยบ้านสูงสุด 50,000 บาท
+
+      const calcDeductionsWithSim = (simL, simP) => {
+        // ประกันชีวิตและสุขภาพ (รวมกันไม่เกิน 100,000 บาท)
+        const inputLife = Math.max(0, (deductions.generalLife || 0)) + Math.max(0, simL);
+        const inputHealth = Math.max(0, (deductions.health || 0));
+        const inputHealthParent = Math.max(0, (deductions.healthParent || 0));
+
+        const healthAllowable = Math.min(inputHealth, 25000); // สุขภาพตัวเองสูงสุด 25,000 บาท
+        const healthParentAllowable = Math.min(inputHealthParent, 15000); // สุขภาพพ่อแม่สูงสุด 15,000 บาท
+
+        let generalLifeBucketUsed = Math.min(inputLife + healthAllowable, 100000);
+
+        // การลงทุน (RMF, SSF, PVD) - รวมกันไม่เกิน 500,000 บาท
+        const pvd = Math.min(Math.max(0, deductions.providentFund || 0), totalIncome * 0.15);
+        const rmf = Math.min(Math.max(0, deductions.rmf || 0), totalIncome * 0.30);
+        const ssf = Math.min(Math.max(0, deductions.ssf || 0), totalIncome * 0.30);
+
+        // ประกันบำนาญ (15% ของเงินได้ ไม่เกิน 200,000 บาท) - ไม่รวมกับ RMF/SSF/PVD
+        const maxPensionDeductible = Math.min(totalIncome * 0.15, 200000);
+        const basePensionDeductible = Math.min(Math.max(0, deductions.pension || 0), maxPensionDeductible);
+        const pensionWithSim = Math.min(basePensionDeductible + Math.max(0, simP), maxPensionDeductible);
+
+        // กลุ่มการลงทุน (RMF, SSF, PVD รวมกันไม่เกิน 500,000 บาท) - ไม่รวมประกันบำนาญ
+        const investmentGroupTotal = rmf + ssf + pvd;
+        const finalInvestmentDeduction = Math.min(investmentGroupTotal, 500000);
+
+        // ThaiESG (สูงสุด 100,000 บาท) - แยกต่างหาก
+        const thaiEsgDeduction = Math.min(Math.max(0, deductions.thaiesg || 0), 100000);
+
+        // รวมค่าลดหย่อนทั้งหมดยกเว้นบริจาค
+        const totalNonDonationDeductions = (
+          personalDeduction +
+          familyDeduction +
+          socialDeduction +
+          disabledSupporterDeduction +
+          childBirthDeduction +
+          mortgageInterestDeduction +
+          healthParentAllowable +
+          generalLifeBucketUsed +
+          finalInvestmentDeduction +
+          thaiEsgDeduction +
+          pensionWithSim  // แยกจากกลุ่มการลงทุน
+        );
+
+        // คำนวณเพดานบริจาค (ไม่เกิน 10% ของเงินได้หลังหักค่าใช้จ่ายและลดหย่อนอื่น)
+        const incomeAfterExpensesAndOtherDeductions = Math.max(0, totalIncome - totalExpenses - totalNonDonationDeductions);
+
+        // บริจาคทั่วไป
+        const finalGeneralDonation = Math.min(Math.max(0, deductions.generalDonation || 0), incomeAfterExpensesAndOtherDeductions * 0.10);
+        
+        // บริจาค 2 เท่า (การศึกษา/สถานพยาบาล)
+        const educationDonation = Math.max(0, deductions.educationDonation || 0);
+        const finalDoubleDonationDeduction = Math.min(educationDonation * 2, incomeAfterExpensesAndOtherDeductions * 0.10);
+        
+        // บริจาคพรรคการเมือง
+        const finalPoliticalDonation = Math.min(Math.max(0, deductions.politicalDonation || 0), 5000);
+
+        const totalDonationDeductions = finalGeneralDonation + finalDoubleDonationDeduction + finalPoliticalDonation;
+
+        const totalDeductions = totalNonDonationDeductions + totalDonationDeductions;
+
+        // รายได้พึงประเมิน (เงินได้หลังหักค่าใช้จ่ายและค่าลดหย่อน)
+        const netIncome = Math.max(totalIncome - totalExpenses - totalDeductions, 0);
+
+        return {
+          totalDeductions,
+          netIncome,
+          finalGeneralLifeDeduction: generalLifeBucketUsed,
+          finalPensionDeduction: pensionWithSim,
+          finalInvestmentDeduction,
+          maxPensionDeductible,
+          finalGeneralDonation,
+          finalDoubleDonationDeduction,
+          finalPoliticalDonation,
+          assessableIncome: Math.max(0, totalIncome - totalExpenses), // รายได้พึงประเมินก่อนหักค่าลดหย่อน
+          expenseDetails
+        };
+      };
+
+      const baseCase = calcDeductionsWithSim(0, 0);
+      const { taxPayable: baseTaxPayable } = calculateTaxFromNet(baseCase.netIncome);
+
+      const simCase = calcDeductionsWithSim(simLife, simPension);
+      const { taxPayable, highestBracket } = calculateTaxFromNet(simCase.netIncome);
+
+      return {
+        totalIncome,
+        totalExpenses,
+        netIncome: simCase.netIncome,
+        taxPayable,
+        highestBracket,
+        baseTaxPayable,
+        deductionBreakdown: {
+          lifeUsed: simCase.finalGeneralLifeDeduction,
+          pensionUsed: simCase.finalPensionDeduction,
+          investmentTotal: simCase.finalInvestmentDeduction,
+          totalDonationDeductions: simCase.finalGeneralDonation + simCase.finalDoubleDonationDeduction + simCase.finalPoliticalDonation
+        },
+        gaps: {
+          lifeGap: Math.max(0, 100000 - simCase.finalGeneralLifeDeduction),
+          pensionGap: Math.max(0, simCase.maxPensionDeductible - simCase.finalPensionDeduction)
+        },
+        maxPensionDeductible: simCase.maxPensionDeductible,
+        assessableIncome: simCase.assessableIncome,
+        expenseDetails: simCase.expenseDetails,
+        donationBase: Math.max(0, totalIncome - totalExpenses - (
+          60000 + // personal
+          (Math.max(0, (deductions.spouse || 0)) + 
+          Math.max(0, (deductions.child || 0)) * 30000 + 
+          Math.max(0, (deductions.parent || 0)) * 30000) + // family
+          Math.min(Math.max(0, deductions.socialSecurity || 0), 9000) + // social
+          Math.max(0, (deductions.disabledSupporter || 0)) * 60000 + // disabled
+          Math.min(Math.max(0, deductions.childBirth || 0), 60000) + // child birth
+          Math.min(Math.max(0, deductions.mortgageInterest || 0), 50000) + // mortgage
+          Math.min(Math.max(0, (deductions.generalLife || 0)) + Math.min(Math.max(0, deductions.health || 0), 25000), 100000) + // life+health
+          Math.min(Math.max(0, deductions.pension || 0), Math.min(totalIncome * 0.15, 200000)) + // pension
+          Math.min(
+            Math.min(Math.max(0, deductions.rmf || 0), totalIncome * 0.30) +
+            Math.min(Math.max(0, deductions.ssf || 0), totalIncome * 0.30) +
+            Math.min(Math.max(0, deductions.providentFund || 0), totalIncome * 0.15),
+            500000
+          ) + // investment
+          Math.min(Math.max(0, deductions.thaiesg || 0), 100000) // ThaiESG
+        ))
+      };
+    }, [incomes, deductions, incomeMode, simLife, simPension]);
+
+    // Render Sidebar
+    const renderSidebar = () => (
+      React.createElement('div', {
+        className: `
+          bg-gray-100 border-r border-gray-200 flex flex-col h-full transition-all duration-300
+          hidden md:flex md:w-64
+        `
+      },
+        React.createElement('div', { className: "p-6 border-b border-gray-200 bg-white" },
+          React.createElement('h1', { className: "font-bold text-xl text-blue-800 tracking-tight" }, "TAX Calculator ", React.createElement('span', { className: "text-xs text-gray-500 block font-light" }, "ระบบคำนวณภาษีเงินได้บุคคลธรรมดา"))
+        ),
+        React.createElement('nav', { className: "flex-1 overflow-y-auto py-4 px-3 space-y-2" },
+          [
+            { id: 'income', icon: Calculator, label: 'รายได้ (Income)' },
+            { id: 'deduction', icon: ShieldCheck, label: 'ลดหย่อน (Deductions)' },
+            { id: 'dashboard', icon: PieChart, label: 'Optimization Dashboard' },
+            { id: 'advisor', icon: BookOpen, label: 'Advisor Script' },
+          ].map(item => {
+            const isActive = activeTab === item.id;
+            return React.createElement('button', {
+              key: item.id,
+              onClick: () => { setActiveTab(item.id); setIsMobileMenuOpen(false); },
+              className: `
+                w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative overflow-hidden
+                ${isActive ? 'bg-white text-blue-700 shadow-sm border-l-4 border-blue-600' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'}
+              `
+            },
+              React.createElement(item.icon, { size: 18, className: isActive ? 'text-blue-600' : '' }),
+              React.createElement('span', { className: "relative z-10" }, item.label),
+              isActive && React.createElement('div', { className: "absolute inset-0 bg-blue-50 opacity-50 z-0" })
+            );
+          })
+        ),
+        
+        {/* Credit Card */}
+        React.createElement('div', { className: "mx-4 mb-4 mt-2" },
+          React.createElement('div', { className: "bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-4 shadow-sm" },
+            React.createElement('div', { className: "flex items-center justify-center mb-2" },
+              React.createElement(FileText, { className: "w-5 h-5 text-blue-600 mr-2" }),
+              React.createElement('p', { className: "text-sm font-bold text-blue-800" }, "ข้อมูลอ้างอิงจาก")
+            ),
+            React.createElement('div', { className: "text-center" },
+              React.createElement('p', { className: "text-xs text-gray-600 mb-1" }, "Produced by : Training Specialist"),
+              React.createElement('p', { className: "text-sm text-blue-800 font-bold" }, "PRU - Academy"),
+              React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "อ้างอิง: ประมวลรัษฎากร มาตรา 40, 47")
+            )
+          )
+        ),
+        
+        React.createElement('div', { className: "flex-1" })
+      )
+    );
+
+    // Income page
+    const renderIncomePage = () => (
+      React.createElement('div', { className: "space-y-6 animate-in slide-in-from-bottom-4 duration-500" },
+        React.createElement('div', { className: "flex justify-between items-center mb-6" },
+          React.createElement('h2', { className: "text-2xl font-bold text-gray-800" }, "รวมเงินได้พึงประเมิน"),
+          React.createElement('div', { className: "flex bg-gray-200 p-1 rounded-xl text-sm font-medium shadow-inner" },
+            ['monthly', 'yearly'].map(mode => {
+              const isActive = incomeMode === mode;
+              return React.createElement('button', {
+                key: mode,
+                onClick: () => setIncomeMode(mode),
+                className: `px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${isActive ? 'bg-white shadow-sm text-blue-700 font-bold' : 'text-gray-500 hover:text-gray-700'}`
+              },
+                isActive && React.createElement(Activity, { size: 14, className: "text-green-500 fill-green-500 animate-pulse" }),
+                mode === 'monthly' ? 'รายเดือน' : 'รายปี'
+              );
+            })
+          )
+        ),
+        
+        {/* Card แสดงรวมเงินได้พึงประเมิน */}
+        React.createElement('div', { className: "bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-lg" },
+          React.createElement('div', { className: "flex flex-col items-center justify-center" },
+            React.createElement('div', { className: "flex items-center gap-2 mb-2" },
+              React.createElement(CreditCard, { className: "w-6 h-6" }),
+              React.createElement('span', { className: "text-lg font-medium" }, "รวมเงินได้พึงประเมินต่อปี")
+            ),
+            React.createElement('span', { className: "text-5xl font-bold tracking-tight" }, calculateResults.assessableIncome.toLocaleString()),
+            React.createElement('span', { className: "text-xl mt-2" }, "บาท"),
+            React.createElement('p', { className: "text-blue-100 text-sm mt-3 text-center" }, 
+              "คำนวณจากรายได้ทั้งหมดหักด้วยค่าใช้จ่ายตามอัตราที่กำหนด"
+            )
+          )
+        ),
+        
+        // Annual summary line
+        React.createElement('div', { className: "text-sm text-gray-600 flex items-center gap-4" },
+          React.createElement('span', null, "ยอดรวมรายได้ต่อปี (Total annual income):"),
+          React.createElement('span', { className: "font-semibold text-gray-800" }, calculateResults.totalIncome.toLocaleString() + " ฿")
+        ),
+        
+        React.createElement('div', { className: "space-y-4" },
+          incomes.map((inc) => {
+            const typeInfo = INCOME_TYPES.find(t => t.id === inc.typeId);
+            if (!inc.active && inc.typeId !== 1) return null;
+
+            return React.createElement('div', { key: inc.typeId, className: "bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative group hover:border-blue-300 transition-all" },
+              React.createElement('div', { className: "flex justify-between items-start mb-3" },
+                React.createElement('div', null,
+                  React.createElement('h3', { className: "font-semibold text-gray-800 text-lg flex items-center gap-2" },
+                    typeInfo.name,
+                    React.createElement('button', {
+                      onClick: () => setModalData({ 
+                        isOpen: true, 
+                        title: typeInfo.name, 
+                        content: typeInfo.desc + '\n\nการหักค่าใช้จ่าย: ' + typeInfo.deductionDesc + '\n\nอ้างอิง: ' + typeInfo.legalRef 
+                      }),
+                      className: "text-gray-400 hover:text-blue-500 transition-colors",
+                      'aria-label': `ข้อมูล ${typeInfo.name}`
+                    }, React.createElement(Info, { size: 16 }))
+                  ),
+                  typeInfo.subOptions && inc.active ? React.createElement('div', { className: "mt-2 pt-2 border-t-2 border-yellow-100" },
+                    React.createElement('div', { className: "inline-block text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-1 rounded-md border border-yellow-100 mb-2" }, "เลือกอัตราหักค่าใช้จ่าย"),
+                    React.createElement('select', {
+                      className: "mt-0 text-sm border-gray-300 rounded-md shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 text-gray-600 bg-gray-50",
+                      value: inc.expenseRate,
+                      onChange: (e) => handleIncomeChange(inc.typeId, 'expenseRate', e.target.value)
+                    }, typeInfo.subOptions.map(opt => React.createElement('option', { key: opt.label, value: opt.rate }, opt.label)))
+                  ) : React.createElement('p', { className: "text-sm text-gray-500" }, typeInfo.deductionDesc)
+                ),
+                inc.typeId !== 1 && React.createElement('button', { onClick: () => toggleIncomeType(inc.typeId), className: "text-red-400 hover:text-red-600", 'aria-label': `ลบ ${typeInfo.name}` }, React.createElement(X, { size: 18 }))
+              ),
+              React.createElement('div', { className: "relative" },
+                React.createElement('input', {
+                  type: "number",
+                  min: "0",
+                  step: "1",
+                  value: inc.amount || '',
+                  onChange: (e) => {
+                    const value = e.target.value;
+                    if (value === '' || (Number(value) >= 0 && Number(value) <= 1000000000)) {
+                      handleIncomeChange(inc.typeId, 'amount', value);
+                    }
+                  },
+                  className: "w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-right font-mono text-lg",
+                  placeholder: "0.00",
+                  'aria-label': `${typeInfo.name} จำนวนเงิน`
+                }),
+                React.createElement('span', { className: "absolute right-4 top-3.5 text-gray-400 text-sm" }, "บาท")
+              ),
+              incomeMode === 'monthly' && React.createElement('div', { className: "mt-2 flex justify-end items-center gap-2 text-sm text-gray-600" },
+                React.createElement('span', null, "เทียบเท่าต่อปี:"),
+                React.createElement('span', { className: "font-medium text-gray-700" }, (((Number(inc.amount) || 0) * 12)).toLocaleString() + " ฿")
+              )
+            );
+          }),
+          React.createElement('div', { className: "pt-2" },
+            React.createElement('p', { className: "text-sm text-gray-500 mb-3" }, "เพิ่มรายได้ประเภทอื่น"),
+            React.createElement('div', { className: "flex flex-wrap gap-2" },
+              incomes.filter(i => !i.active && i.typeId !== 1).map(inc => {
+                const info = INCOME_TYPES.find(t => t.id === inc.typeId);
+                return React.createElement('button', {
+                  key: inc.typeId,
+                  onClick: () => toggleIncomeType(inc.typeId),
+                  className: "flex items-center gap-1.5 px-3 py-2 bg-white border border-dashed border-gray-300 rounded-lg text-sm text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-all"
+                }, React.createElement(Plus, { size: 14 }), info.name.split(' ')[0]);
+              })
+            )
+          ),
+          React.createElement('div', { className: "mt-8 bg-blue-50 rounded-xl p-4 flex justify-between items-center" },
+            React.createElement('div', null,
+              React.createElement('span', { className: "text-blue-800 font-semibold block" }, "รวมค่าใช้จ่าย (หักอัตโนมัติ)"),
+              React.createElement('span', { className: "text-xs text-blue-600 opacity-75" }, "คำนวณตามอัตราของรายได้แต่ละประเภทที่ระบุ")
+            ),
+            React.createElement('span', { className: "text-xl font-bold text-blue-900" }, calculateResults.totalExpenses.toLocaleString() + " บาท")
+          ),
+          
+          {/* Card แสดงค่าใช้จ่ายที่ถูกหัก (ข้อ 5) */}
+          calculateResults.expenseDetails && calculateResults.expenseDetails.length > 0 && 
+          React.createElement(ExpenseDetailsCard, { expenseDetails: calculateResults.expenseDetails })
+        )
+      )
+    );
+
+    const renderDeductionPage = () => (
+      React.createElement('div', { className: "space-y-6 animate-in slide-in-from-bottom-4 duration-500" },
+        React.createElement('h2', { className: "text-2xl font-bold text-gray-800 mb-6" }, "รายการลดหย่อน"),
+        
+        {/* Validation Error Display */}
+        Object.keys(validationErrors).length > 0 && 
+        React.createElement('div', { className: "bg-red-50 border border-red-200 rounded-lg p-4" },
+          React.createElement('div', { className: "flex items-center gap-2 mb-2" },
+            React.createElement(AlertTriangle, { className: "w-5 h-5 text-red-600" }),
+            React.createElement('span', { className: "font-medium text-red-800" }, "กรุณาตรวจสอบข้อมูล")
+          ),
+          Object.entries(validationErrors).map(([key, error]) => 
+            React.createElement('div', { key: key, className: "text-sm text-red-700 ml-7" }, error)
+          )
+        ),
+        
+        DEDUCTION_CATEGORIES.map(category => {
+          const items = category.items.filter(item => item.isCommon || showMoreDeductions);
+          if (items.length === 0) return null;
+
+          return React.createElement('div', { key: category.id, className: "bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm" },
+            React.createElement('div', { className: "px-4 py-3 border-b border-gray-200 font-bold text-blue-700 flex items-center gap-2 bg-gradient-to-r from-white via-blue-50 to-cyan-50" },
+              React.createElement(category.icon, { size: 18, className: "text-blue-500" }), 
+              React.createElement('div', null,
+                category.title,
+                React.createElement('div', { className: "text-xs text-gray-500 font-normal" }, category.legalRef)
+              )
+            ),
+            React.createElement('div', { className: "p-4 space-y-4" },
+              items.map((item) => {
+                const currentValue = deductions[item.key] || 0;
+                return React.createElement('div', { key: item.key, className: "flex items-center justify-between gap-4" },
+                  React.createElement('div', { className: "flex items-center gap-2 flex-1" },
+                    React.createElement('span', { className: "text-sm text-gray-700" }, item.label),
+                    React.createElement('button', { 
+                      onClick: () => setModalData({ 
+                        isOpen: true, 
+                        title: item.label, 
+                        content: item.desc + '\n\n' + (item.legalRef ? 'อ้างอิง: ' + item.legalRef : '') 
+                      }), 
+                      className: "text-gray-300 hover:text-yellow-500", 
+                      'aria-label': `info ${item.label}` 
+                    }, React.createElement(Lightbulb, { size: 14 }))
+                  ),
+                  React.createElement('div', { className: "flex items-center gap-2" },
+                    React.createElement('div', { className: "text-xs px-2 py-1 rounded bg-gray-50 border border-gray-200 text-gray-600 mr-2 min-w-[72px] text-right" }, currentValue > 0 ? currentValue.toLocaleString() + " ฿" : "0 ฿"),
+                    React.createElement('input', {
+                      type: "number",
+                      min: "0",
+                      max: item.max || 1000000000,
+                      value: deductions[item.key] || 0,
+                      onChange: (e) => handleDeductionChange(item.key, e.target.value),
+                      className: "w-32 px-3 py-2 bg-gray-50 border border-gray-200 rounded text-right text-sm focus:ring-1 focus:ring-blue-500 outline-none",
+                      placeholder: "0",
+                      'aria-label': `${item.label} จำนวน`
+                    })
+                  )
+                );
+              })
+            )
+          );
+        }),
+        React.createElement('div', { className: "mt-6 text-center" },
+          React.createElement('button', { onClick: () => setShowMoreDeductions(!showMoreDeductions), className: "text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center gap-2 mx-auto bg-white border border-blue-200 px-4 py-2 rounded-full shadow-sm", 'aria-label': 'toggle more deductions' },
+            React.createElement(Plus, { size: 16, className: (showMoreDeductions ? 'rotate-45 text-red-500' : '') }),
+            showMoreDeductions ? 'ซ่อนรายการลดหย่อนที่สำคัญน้อย' : 'แสดงรายการลดหย่อนอื่น ๆ เพิ่มเติม'
+          )
+        )
+      )
+    );
+
+    const renderDashboard = () => {
+      const {
+        totalIncome,
+        netIncome,
+        taxPayable,
+        baseTaxPayable,
+        deductionBreakdown,
+        gaps,
+        highestBracket,
+        maxPensionDeductible,
+        assessableIncome,
+        expenseDetails
+      } = calculateResults;
+
+      const usedLifePercent = (deductionBreakdown.lifeUsed / 100000) * 100;
+      const usedPensionPercent = maxPensionDeductible > 0 ? (deductionBreakdown.pensionUsed / maxPensionDeductible) * 100 : 0;
+
+      const taxSaved = Math.max(0, baseTaxPayable - taxPayable);
+      const taxSavedPercent = baseTaxPayable > 0 ? (taxSaved / baseTaxPayable) * 100 : 0;
+
+      const taxAsPercentOfAssessable = netIncome > 0 ? (taxPayable / netIncome) * 100 : 0;
+
+      return React.createElement('div', { className: "space-y-6 pb-8" },
+        React.createElement('div', { className: "bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden" },
+          React.createElement('div', { className: "absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10 blur-xl" }),
+          React.createElement('div', { className: "relative z-10 grid grid-cols-2 gap-4" },
+            React.createElement('div', null,
+              React.createElement('p', { className: "text-blue-100 text-sm font-medium" }, "รายได้สุทธิ (Net Income)"),
+              React.createElement('h3', { className: "text-2xl font-bold mt-1" }, netIncome.toLocaleString())
+            ),
+            React.createElement('div', { className: "text-right" },
+              React.createElement('p', { className: "text-blue-100 text-sm font-medium" }, "ฐานภาษีสูงสุด"),
+              React.createElement('div', { className: "inline-block bg-white/20 px-3 py-1 rounded-full text-xs font-bold mt-1 backdrop-blur-sm" }, highestBracket + "%")
+            )
+          ),
+          React.createElement('div', { className: "mt-8 pt-6 border-t border-white/20" },
+            React.createElement('p', { className: "text-blue-100 text-sm mb-1" }, "ภาษีที่ต้องชำระ (Tax Payable)"),
+            React.createElement('div', { className: "flex items-baseline gap-4" },
+              React.createElement('h2', { className: "text-5xl font-bold tracking-tight" }, taxPayable.toLocaleString(), " ", React.createElement('span', { className: "text-xl font-normal opacity-80" }, "บาท")),
+              React.createElement('span', { className: "text-sm text-blue-100/90" }, `คิดเป็น ${taxAsPercentOfAssessable.toFixed(1)}% ของเงินได้พึงประเมิน`)
+            )
+          )
+        ),
+        React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+          React.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center py-6" },
+            React.createElement(CircularProgress, { percentage: usedLifePercent, color: "text-green-500", label: "สิทธิ์ประกันชีวิต", subLabel: `${deductionBreakdown.lifeUsed.toLocaleString()} / 100,000` })
+          ),
+          React.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center py-6" },
+            React.createElement(CircularProgress, { percentage: usedPensionPercent, color: "text-purple-500", label: "สิทธิ์ประกันบำนาญ", subLabel: `${deductionBreakdown.pensionUsed.toLocaleString()} / ${maxPensionDeductible.toLocaleString()}` })
+          )
+        ),
+        React.createElement('div', { className: "bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden" },
+          React.createElement('div', { className: "absolute top-0 left-0 w-1 h-full bg-blue-500" }),
+          React.createElement('div', { className: "flex items-center gap-2 mb-6" },
+            React.createElement(Sliders, { className: "w-6 h-6 text-blue-600" }),
+            React.createElement('div', null,
+              React.createElement('h3', { className: "font-bold text-gray-800 text-lg" }, "Simulator: ปรับแผนประกัน"),
+              React.createElement('p', { className: "text-sm text-gray-500" }, "ลองปรับยอดซื้อเพิ่ม เพื่อดูผลลัพธ์ภาษีที่เปลี่ยนไป")
+            )
+          ),
+          React.createElement('div', { className: "mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200" },
+            React.createElement('div', { className: "flex justify-between text-sm mb-2" },
+              React.createElement('span', { className: "font-medium text-gray-700 flex items-center gap-2" }, React.createElement(ShieldCheck, { size: 16 }), " ซื้อประกันชีวิตเพิ่ม"),
+              React.createElement('span', { className: "text-blue-600 font-bold text-lg" }, "+" + simLife.toLocaleString())
+            ),
+            React.createElement('input', { type: "range", min: "0", max: "100000", step: "1000", value: simLife, onChange: (e) => setSimLife(Number(e.target.value)), className: "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" }),
+            React.createElement('p', { className: "text-xs text-gray-400 mt-2 flex items-center gap-1" }, React.createElement(Info, { size: 12 }), " สิทธิ์ลดหย่อนประกันชีวิตทั่วไปสูงสุด 100,000 บาท")
+          ),
+          React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border border-gray-200" },
+            React.createElement('div', { className: "flex justify-between text-sm mb-2" },
+              React.createElement('span', { className: "font-medium text-gray-700 flex items-center gap-2" }, React.createElement(TrendingUp, { size: 16 }), " ซื้อบำนาญเพิ่ม"),
+              React.createElement('span', { className: "text-purple-600 font-bold text-lg" }, "+" + simPension.toLocaleString())
+            ),
+            React.createElement('input', { type: "range", min: "0", max: "300000", step: "1000", value: simPension, onChange: (e) => setSimPension(Number(e.target.value)), className: "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600" }),
+            React.createElement('div', { className: "mt-2 text-xs p-2 rounded bg-white border border-orange-100 text-orange-700 flex items-start gap-2" },
+              React.createElement(Lightbulb, { size: 14, className: "shrink-0 mt-0.5" }),
+              React.createElement('span', null, "เบี้ยบำนาญอยู่ภายใต้เพดาน 15% ของเงินได้ (และรวมในเพดานกลุ่มการลงทุน 500,000 บาท)")
+            )
+          )
+        ),
+        (simLife > 0 || simPension > 0) && React.createElement('div', { className: "bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-md" },
+          React.createElement('div', { className: "flex flex-col md:flex-row md:items-center justify-between" },
+            React.createElement('div', null,
+              React.createElement('p', { className: "font-medium text-green-100 mb-1 flex items-center gap-2" }, React.createElement(Coins, { size: 18 }), " ผลลัพธ์จากการจำลองแผน (Simulation)"),
+              React.createElement('h3', { className: "text-2xl font-bold" }, "ประหยัดภาษีได้เพิ่มขึ้น")
+            ),
+            React.createElement('div', { className: "text-right mt-4 md:mt-0" },
+              React.createElement('h2', { className: "text-3xl font-bold" }, Math.max(0, calculateResults.baseTaxPayable - calculateResults.taxPayable).toLocaleString(), " ", React.createElement('span', { className: "text-lg font-normal" }, "บาท")),
+              React.createElement('p', { className: "text-green-100 text-sm mt-1" }, "คิดเป็น " + (calculateResults.baseTaxPayable > 0 ? ((Math.max(0, calculateResults.baseTaxPayable - calculateResults.taxPayable) / calculateResults.baseTaxPayable) * 100).toFixed(1) : 0) + "% ของภาษีเดิม")
+            )
+          )
+        ),
+        
+        {/* Card แสดงค่าใช้จ่ายที่ถูกหักใน Dashboard */}
+        expenseDetails && expenseDetails.length > 0 && 
+        React.createElement(ExpenseDetailsCard, { expenseDetails: expenseDetails })
+      )
+    );
+
+    // Mobile Sidebar Component
+    const MobileSidebar = () => {
+      if (!isMobileMenuOpen) return null;
+      
+      return React.createElement('div', { className: "fixed inset-0 z-50 flex md:hidden" },
+        React.createElement('div', { 
+          className: "fixed inset-0 bg-black bg-opacity-50", 
+          onClick: () => setIsMobileMenuOpen(false) 
+        }),
+        React.createElement('div', { className: "relative bg-white w-64 h-full shadow-xl" },
+          React.createElement('div', { className: "p-6 border-b border-gray-200 bg-white flex justify-between items-center" },
+            React.createElement('h1', { className: "font-bold text-xl text-blue-800 tracking-tight" }, "TAX Calculator"),
+            React.createElement('button', { 
+              onClick: () => setIsMobileMenuOpen(false), 
+              className: "text-gray-400 hover:text-gray-600" 
+            }, React.createElement(X, { size: 24 }))
+          ),
+          React.createElement('nav', { className: "flex-1 overflow-y-auto py-4 px-3 space-y-2" },
+            [
+              { id: 'income', icon: Calculator, label: 'รายได้ (Income)' },
+              { id: 'deduction', icon: ShieldCheck, label: 'ลดหย่อน (Deductions)' },
+              { id: 'dashboard', icon: PieChart, label: 'Optimization Dashboard' },
+              { id: 'advisor', icon: BookOpen, label: 'Advisor Script' },
+            ].map(item => {
+              const isActive = activeTab === item.id;
+              return React.createElement('button', {
+                key: item.id,
+                onClick: () => { setActiveTab(item.id); setIsMobileMenuOpen(false); },
+                className: `
+                  w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative overflow-hidden
+                  ${isActive ? 'bg-white text-blue-700 shadow-sm border-l-4 border-blue-600' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'}
+                `
+              },
+                React.createElement(item.icon, { size: 18, className: isActive ? 'text-blue-600' : '' }),
+                React.createElement('span', { className: "relative z-10" }, item.label),
+                isActive && React.createElement('div', { className: "absolute inset-0 bg-blue-50 opacity-50 z-0" })
+              );
+            })
+          ),
+          {/* Credit Card สำหรับ Mobile */}
+          React.createElement('div', { className: "mx-4 mb-4 mt-2" },
+            React.createElement('div', { className: "bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-4 shadow-sm" },
+              React.createElement('div', { className: "flex items-center justify-center mb-2" },
+                React.createElement(FileText, { className: "w-5 h-5 text-blue-600 mr-2" }),
+                React.createElement('p', { className: "text-sm font-bold text-blue-800" }, "ข้อมูลอ้างอิงจาก")
+              ),
+              React.createElement('div', { className: "text-center" },
+                React.createElement('p', { className: "text-xs text-gray-600 mb-1" }, "Produced by : Training Specialist"),
+                React.createElement('p', { className: "text-sm text-blue-800 font-bold" }, "PRU - Academy"),
+                React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, "อ้างอิง: ประมวลรัษฎากร")
+              )
+            )
+          )
+        )
+      );
+    };
+
+    return React.createElement('div', { className: "flex h-screen bg-gray-100 font-sans text-gray-900 overflow-hidden" },
+      renderSidebar(),
+      React.createElement('div', { className: "flex-1 flex flex-col h-full w-full relative bg-gray-50" },
+        React.createElement('div', { className: "md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-20 shadow-sm" },
+          React.createElement('div', { className: "flex items-center gap-2" },
+            React.createElement('button', { onClick: () => setIsMobileMenuOpen(true), className: "p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full" }, React.createElement(Menu, { size: 24 })),
+            React.createElement('h1', { className: "font-bold text-lg text-blue-800" }, "TAX Calculator")
+          ),
+          React.createElement('div', { className: "text-right" },
+            React.createElement('span', { className: "text-xs text-gray-500 block" }, "ภาษี (ประมาณ)"),
+            React.createElement('span', { className: "font-bold text-blue-600" }, calculateResults.taxPayable.toLocaleString())
+          )
+        ),
+        React.createElement(MobileSidebar),
+        React.createElement('main', { className: "flex-1 overflow-y-auto p-4 md:p-8 pb-32 scroll-smooth" },
+          React.createElement('div', { className: "max-w-5xl mx-auto space-y-6" },
+            activeTab === 'income' && renderIncomePage(),
+            activeTab === 'deduction' && renderDeductionPage(),
+            activeTab === 'dashboard' && renderDashboard(),
+            activeTab === 'advisor' && React.createElement(AdvisorScriptNew, { taxDetails: calculateResults, simTotals: { taxSaved: Math.max(0, calculateResults.baseTaxPayable - calculateResults.taxPayable) } }),
+            {/* แสดง Bar Chart 2 ชุด */}
+            activeTab === 'dashboard' && React.createElement('div', null, 
+              React.createElement(BarChartComparison, { 
+                totalIncome: calculateResults.totalIncome, 
+                taxBefore: calculateResults.baseTaxPayable, 
+                taxAfter: calculateResults.taxPayable,
+                assessableIncome: calculateResults.assessableIncome 
+              })
+            )
+          )
+        ),
+        activeTab !== 'advisor' && activeTab !== 'dashboard' && React.createElement('div', { className: "absolute bottom-8 right-6 md:right-12 z-10" },
+          React.createElement('button', {
+            onClick: () => {
+              const order = ['income', 'deduction', 'dashboard', 'advisor'];
+              const next = order[order.indexOf(activeTab) + 1];
+              if (next) setActiveTab(next);
+            },
+            className: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 font-medium transition-all transform hover:scale-105 active:scale-95"
+          }, "ถัดไป ", React.createElement(ChevronDown, { size: 18, className: "-rotate-90" }))
+        )
+      ),
+      React.createElement(Modal, { isOpen: modalData.isOpen, onClose: () => setModalData({ ...modalData, isOpen: false }), title: modalData.title, content: modalData.content })
+    );
+  }
+
+  // Mount
+  const root = createRoot(document.getElementById('root'));
+  root.render(React.createElement(React.StrictMode, null, React.createElement(App)));
+
+  </script>
 </body>
 </html>
